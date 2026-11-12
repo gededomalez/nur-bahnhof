@@ -1,5 +1,9 @@
 /**
+ * @OnlyCurrentDoc
+ *
  * Nur Bahnhof – Messung in einer Google-Tabelle
+ *
+ * Die Zeile oben beschränkt das Skript auf genau diese eine Tabelle.
  *
  * Dieses Skript nimmt die anonymen Ereignisse der App entgegen, schreibt jedes
  * als Zeile in das Blatt „Ereignisse“ und berechnet daraus das Blatt „Auswertung“.
