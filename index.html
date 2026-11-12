@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KI-Kurs Nur Bahnhof</title>
+<style>
+/* Schriften liegen im Ordner fonts, damit beim Laden keine Daten an Dritte gehen */
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:400;font-style:normal;font-display:swap;src:url("fonts/atkinson-hyperlegible-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-style:normal;font-display:swap;src:url("fonts/atkinson-hyperlegible-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:600;font-style:normal;font-display:swap;src:url("fonts/barlow-condensed-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-style:normal;font-display:swap;src:url("fonts/barlow-condensed-latin-700-normal.woff2") format("woff2")}
+:root{
+  /* Layout: eine schmale Spalte wie ein Aushangfahrplan. Die gelbe Tafel trägt Titel und Fahrplan,
+     alles andere ist ruhiges Papier. Rückmeldungen sind Signale: Grün heißt Fahrt, Rot heißt Halt. */
+  --tafel:#FFD400;
+  --tafel-schrift:#101C3A;
+  --papier:#F7F7F1;
+  --karte:#FFFFFF;
+  --tinte:#101C3A;
+  --tinte-leise:#4A546B;
+  --linie:#D5D6CB;
+  --gleis:#0B4EA2;
+  --gleis-schrift:#FFFFFF;
+  --fahrt:#0A7A3E;
+  --halt:#BF2A1C;
+  --vorsicht:#8A5200;
+  --fahrt-flaeche:#E3F3E9;
+  --halt-flaeche:#FBE8E5;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --text:"Atkinson Hyperlegible",Verdana,Tahoma,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --tafel:#131E36;
+    --tafel-schrift:#FFD400;
+    --papier:#0A1120;
+    --karte:#121B30;
+    --tinte:#EEF0F5;
+    --tinte-leise:#A9B2C6;
+    --linie:#2B3754;
+    --gleis:#8FBCFF;
+    --gleis-schrift:#0A1120;
+    --fahrt:#57D595;
+    --halt:#FF8C7C;
+    --vorsicht:#FFC56B;
+    --fahrt-flaeche:#0E2A1E;
+    --halt-flaeche:#33171A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --tafel:#131E36;
+  --tafel-schrift:#FFD400;
+  --papier:#0A1120;
+  --karte:#121B30;
+  --tinte:#EEF0F5;
+  --tinte-leise:#A9B2C6;
+  --linie:#2B3754;
+  --gleis:#8FBCFF;
+  --gleis-schrift:#0A1120;
+  --fahrt:#57D595;
+  --halt:#FF8C7C;
+  --vorsicht:#FFC56B;
+  --fahrt-flaeche:#0E2A1E;
+  --halt-flaeche:#33171A;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--papier);
+  color:var(--tinte);
+  font-family:var(--text);
+  font-size:1.0625rem;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+}
+#app{max-width:35rem;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:3.1rem;letter-spacing:-0.01em}
+h2{font-size:1.95rem}
+h3{font-size:1.35rem;font-weight:600}
+p{margin:0}
+a{color:var(--gleis)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gleis);outline-offset:2px}
+.tafel :focus-visible{outline-color:var(--tafel-schrift)}
+
+/* Tafel */
+.tafel{background:var(--tafel);color:var(--tafel-schrift);padding:1.75rem 1.25rem 1.25rem;display:flex;flex-direction:column;gap:1.1rem}
+.tafel-text{font-size:1.125rem;max-width:30ch}
+.stand{display:flex;flex-direction:column;gap:.45rem}
+.strecke{display:flex;align-items:center}
+.strecke i{width:.95rem;height:.95rem;border-radius:50%;border:2.5px solid var(--tafel-schrift);flex:none;transition:background-color .4s}
+.strecke i.voll{background:var(--tafel-schrift)}
+.strecke b{flex:1;height:2.5px;background:var(--tafel-schrift)}
+.stand p{font-size:.95rem}
+.knopf{
+  background:var(--gleis);color:var(--gleis-schrift);border:0;border-radius:.45rem;
+  padding:.85rem 1.2rem;font-weight:700;font-size:1.0625rem;min-height:3rem;text-align:center;
+}
+.knopf[disabled]{opacity:.42;cursor:not-allowed}
+.tafel .knopf{background:var(--tafel-schrift);color:var(--tafel);align-self:flex-start}
+.knopf.leise{background:transparent;color:var(--gleis);border:2px solid var(--gleis);font-size:1.0625rem}
+
+.fahrplan-kopf{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--tafel-schrift);padding-bottom:.3rem;margin-top:.5rem}
+.fahrplan-kopf span{font-size:.9rem}
+.fahrplan{list-style:none;margin:0;padding:0}
+.fahrplan li{border-bottom:1.5px solid var(--tafel-schrift)}
+.zeile{
+  display:grid;grid-template-columns:auto 1fr auto;gap:.85rem;align-items:center;width:100%;
+  background:none;border:0;padding:.8rem 0;text-align:left;color:inherit;
+}
+.nr{
+  font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1;
+  width:2.3rem;height:2.3rem;display:grid;place-items:center;
+  background:var(--tafel-schrift);color:var(--tafel);border-radius:.25rem;
+}
+.thema{display:flex;flex-direction:column;min-width:0}
+.thema b{font-family:var(--display);font-weight:600;font-size:1.4rem;line-height:1.1}
+.thema span{font-size:.9rem;opacity:.85}
+.rand{display:flex;flex-direction:column;align-items:flex-end;font-size:.9rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rand .erledigt{font-weight:700}
+.zeile.naechster .thema b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+
+/* Papier-Bereiche */
+.seite{padding:1.5rem 1.25rem 2rem;display:flex;flex-direction:column;gap:1.25rem;flex:1}
+.kasten{background:var(--karte);border:1.5px solid var(--linie);border-radius:.6rem;padding:1.1rem 1.15rem;display:flex;flex-direction:column;gap:.6rem}
+.leise{color:var(--tinte-leise);font-size:.95rem}
+
+/* Fahrkarte */
+.fahrkarte{
+  background:var(--karte);border:2px solid var(--tinte);border-radius:.6rem;padding:1.1rem 1.15rem;
+  display:flex;flex-direction:column;gap:.9rem;position:relative;
+}
+.fahrkarte-kopf{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;border-bottom:2px dashed var(--tinte);padding-bottom:.7rem}
+.fahrkarte-zahl{font-family:var(--display);font-weight:700;font-size:2.4rem;line-height:1;font-variant-numeric:tabular-nums}
+.frage-zeile{display:flex;flex-direction:column;gap:.45rem}
+.wahl{display:flex;flex-wrap:wrap;gap:.45rem}
+.wahl button{
+  background:var(--karte);border:2px solid var(--linie);border-radius:.45rem;padding:.5rem .85rem;min-width:2.9rem;min-height:2.75rem;
+}
+.wahl button[aria-pressed="true"]{border-color:var(--gleis);background:var(--gleis);color:var(--gleis-schrift);font-weight:700}
+.kopie{background:var(--papier);border:1.5px dashed var(--linie);border-radius:.45rem;padding:.7rem .8rem;font-size:.95rem;user-select:all;overflow-wrap:anywhere}
+
+/* Navigation */
+.nav{
+  position:sticky;bottom:0;display:grid;grid-template-columns:repeat(4,auto);
+  background:var(--karte);border-top:1.5px solid var(--linie);
+}
+.nav a{
+  padding:.85rem .35rem;text-align:center;text-decoration:none;color:var(--tinte-leise);
+  font-family:var(--display);font-weight:600;font-size:1.2rem;border-top:4px solid transparent;margin-top:-1.5px;
+}
+.nav a[aria-current="page"]{color:var(--tinte);border-top-color:var(--tafel)}
+
+/* Lektion */
+.lektion{display:flex;flex-direction:column;flex:1;min-height:100vh}
+.kopf{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.75rem 1.25rem;background:var(--tafel);color:var(--tafel-schrift)}
+.kopf button{background:none;border:0;padding:.4rem 0;font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:2.75rem}
+.kopf span{font-family:var(--display);font-weight:600;font-size:1.25rem}
+.schritte{display:flex;gap:4px;padding:0 1.25rem;background:var(--tafel);padding-bottom:.75rem}
+.schritte i{flex:1;height:5px;background:var(--tafel-schrift);opacity:.25;border-radius:2px}
+.schritte i.war{opacity:1}
+.blatt{flex:1;padding:1.6rem 1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem}
+.blatt p,.blatt li{max-width:62ch}
+.blatt ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+.fuss{position:sticky;bottom:0;background:var(--papier);border-top:1.5px solid var(--linie);padding:.8rem 1.25rem;display:flex}
+.fuss .knopf{flex:1}
+.fuss.zwei{flex-direction:column;gap:.5rem}
+.kennung{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+.merke{border-left:6px solid var(--tafel);background:var(--karte);padding:.8rem 1rem;border-radius:0 .45rem .45rem 0;font-weight:700}
+.quelle{font-size:.9rem;color:var(--tinte-leise)}
+.zaehler{font-size:.95rem;color:var(--tinte-leise);font-variant-numeric:tabular-nums}
+
+.optionen{display:flex;flex-direction:column;gap:.6rem}
+.option{
+  background:var(--karte);border:2px solid var(--linie);border-radius:.5rem;padding:.8rem 1rem;text-align:left;min-height:3.2rem;
+  display:flex;gap:.7rem;align-items:flex-start;
+}
+.option:not([disabled]):hover{border-color:var(--gleis)}
+.option[disabled]{cursor:default}
+.option.richtig{border-color:var(--fahrt);background:var(--fahrt-flaeche)}
+.option.falsch{border-color:var(--halt);background:var(--halt-flaeche)}
+.option .zeichen{font-weight:700;flex:none;width:1.1rem}
+.option.richtig .zeichen{color:var(--fahrt)}
+.option.falsch .zeichen{color:var(--halt)}
+
+.aussage{
+  background:var(--karte);border:2px solid var(--tinte);border-radius:.6rem;padding:1.4rem 1.1rem;
+  font-family:var(--display);font-weight:600;font-size:1.7rem;line-height:1.15;text-wrap:balance;
+}
+.eimer{display:grid;gap:.5rem;grid-template-columns:repeat(auto-fit,minmax(5.8rem,1fr))}
+.eimer .option{justify-content:center;align-items:center;text-align:center;font-weight:700;padding:.8rem .4rem}
+
+.rueck{border-radius:.5rem;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.45rem;border:2px solid}
+.rueck.gut{border-color:var(--fahrt);background:var(--fahrt-flaeche)}
+.rueck.schlecht{border-color:var(--halt);background:var(--halt-flaeche)}
+.rueck-kopf{display:flex;align-items:center;gap:.55rem;font-weight:700}
+.lampe{width:.95rem;height:.95rem;border-radius:50%;flex:none}
+.gut .lampe{background:var(--fahrt)}
+.schlecht .lampe{background:var(--halt)}
+
+.satz{font-family:var(--display);font-weight:600;font-size:1.75rem;line-height:1.2;background:var(--karte);border:2px solid var(--tinte);border-radius:.6rem;padding:1.1rem}
+.luecke{display:inline-block;min-width:3.5ch;border-bottom:3px solid var(--gleis);color:var(--gleis)}
+.balken{display:flex;flex-direction:column;gap:.5rem}
+.balken-zeile{display:grid;grid-template-columns:6.2rem 1fr 4.2rem;gap:.6rem;align-items:center;font-variant-numeric:tabular-nums}
+.balken-bahn{height:1rem;background:var(--linie);border-radius:.25rem;overflow:hidden}
+.balken-bahn i{display:block;height:100%;background:var(--gleis);border-radius:.25rem}
+.balken-zeile.treffer .balken-bahn i{background:var(--fahrt)}
+.balken-zeile span:last-child{text-align:right}
+
+.eingabe{width:100%;font:inherit;color:var(--tinte);background:var(--karte);border:2px solid var(--linie);border-radius:.5rem;padding:.75rem .9rem;resize:vertical}
+.tokens{display:flex;flex-wrap:wrap;gap:.3rem}
+.tokens span{background:var(--karte);border:1.5px solid var(--gleis);border-radius:.3rem;padding:.1rem .4rem;font-size:1rem}
+.tokens span:nth-child(even){background:var(--tafel);color:#101C3A;border-color:#101C3A}
+.bausteine{display:flex;flex-wrap:wrap;gap:.5rem}
+.baustein{background:var(--karte);border:2px solid var(--linie);border-radius:2rem;padding:.5rem 1rem;min-height:2.75rem;font-weight:700}
+.baustein[aria-pressed="true"]{background:var(--gleis);color:var(--gleis-schrift);border-color:var(--gleis)}
+.prompt{background:var(--karte);border:2px solid var(--tinte);border-radius:.6rem;padding:1rem 1.1rem;font-size:1.1rem}
+.prompt mark{background:var(--tafel);color:#101C3A;padding:0 .15rem;border-radius:.15rem}
+
+.glossar{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.glossar li{padding:.85rem 0;border-bottom:1.5px solid var(--linie);display:flex;flex-direction:column;gap:.2rem}
+.quellen{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.8rem}
+.quellen li{overflow-wrap:anywhere}
+.quellen small{display:block;color:var(--tinte-leise);font-size:.9rem}
+
+@media (min-width:36rem){
+  h1{font-size:3.8rem}
+  #app{box-shadow:0 0 0 1.5px var(--linie)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------- Einstellungen: vor dem Teilen ausfüllen ---------- */
+const KONFIG = {
+  messUrl: "",                 // Web-App-Adresse des Google-Skripts, endet auf /exec. Leer heißt: es wird nichts gezählt.
+  version: "0.2",
+  loeschfrist: "bis zum Ende der Testphase, längstens zwölf Monate",
+  betreiber: { name: "", anschrift: "", mail: "" }   // Angaben für Impressum und Datenschutzhinweis
+};
+
+/* ---------- Quellen ---------- */
+const Q = {
+  bitkom:{kurz:"Bitkom-Umfrage 2026", titel:"Bitkom-Umfrage zur KI-Nutzung in Deutschland, über 1.000 Befragte ab 16 Jahren", wer:"Bericht bei retail-news.de, 2026", url:"https://retail-news.de/bitkom-ki-umfrage-deutschland-alltag-vorbehalte/"},
+  tokens:{kurz:"OpenAI Help Center", titel:"What are tokens and how to count them?", wer:"OpenAI Help Center, abgerufen im November 2026", url:"https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"},
+  ebu:{kurz:"EBU/BBC-Studie 2025", titel:"News Integrity in AI Assistants. An international PSM study", wer:"European Broadcasting Union und BBC, Oktober 2025", url:"https://www.ebu.ch/Report/MIS-BBC/NI_AI_2025.pdf"},
+  ebuOrf:{kurz:"ORF zur EBU-Studie", titel:"KI bei Nachrichten extrem fehleranfällig", wer:"ORF, Oktober 2025", url:"https://orf.at/stories/3409217/"},
+  vz:{kurz:"Verbraucherzentrale", titel:"KI-Chatbots im Überblick: Was Sie über ChatGPT, Gemini & Copilot wissen sollten", wer:"Verbraucherzentrale, abgerufen im November 2026", url:"https://www.verbraucherzentrale.de/wissen/digitale-welt/apps-und-software/kichatbots-im-ueberblick-was-sie-ueber-chatgpt-gemini-copilot-wissen-sollten-89125"},
+  prompt:{kurz:"Anthropic-Dokumentation", titel:"Prompt engineering overview", wer:"Anthropic, abgerufen im November 2026", url:"https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview"},
+  bsi:{kurz:"BSI zu Deepfakes", titel:"Deepfakes – Gefahren und Gegenmaßnahmen", wer:"Bundesamt für Sicherheit in der Informationstechnik", url:"https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Kuenstliche-Intelligenz/Deepfakes/deepfakes_node.html"},
+  art50:{kurz:"DQS zu Artikel 50 der KI-Verordnung", titel:"KI-Kennzeichnungspflicht nach dem EU AI Act", wer:"DQS, 2026. Gesetzestext: Verordnung (EU) 2024/1689, Artikel 50", url:"https://www.dqsglobal.com/de/entdecken/blog/ki-kennzeichnungspflicht-eu-ai-act"},
+  wasser:{kurz:"ORF zu Googles Messung", titel:"Google: KI-Anfrage braucht Strom wie neun Sekunden TV", wer:"ORF, August 2025", url:"https://orf.at/stories/3403199"},
+  wasser2:{kurz:"ingenieur.de", titel:"Wie viel Strom und Wasser braucht ChatGPT?", wer:"ingenieur.de, mit den Angaben von OpenAI", url:"https://www.ingenieur.de/?p=10662"},
+  strom:{kurz:"cleanthinking.de", titel:"Google, Mistral und Epoch AI beziffern den Strom einer KI-Antwort", wer:"cleanthinking.de, 2026, mit Zahlen der Internationalen Energieagentur", url:"https://cleanthinking.de/sprachmodell"},
+  shades:{kurz:"Gender Shades (2018)", titel:"Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification", wer:"Joy Buolamwini und Timnit Gebru, Proceedings of Machine Learning Research 81, 2018", url:"https://proceedings.mlr.press/v81/buolamwini18a.html"},
+  wef:{kurz:"WEF Future of Jobs 2025", titel:"Future of Jobs Report 2025, Pressemitteilung", wer:"World Economic Forum, Januar 2025", url:"https://www.weforum.org/press/2025/01/future-of-jobs-report-2025-78-million-new-job-opportunities-by-2030-but-urgent-upskilling-needed-to-prepare-workforces/"},
+  curriculum:{kurz:"KI-Basiscurriculum", titel:"KI-Basiscurriculum, Endbericht", wer:"Universität für Weiterbildung Krems im Auftrag des OeAD, November 2025", url:"https://digitalekompetenzen.oead.at/fileadmin/Dokumente/oead.at/Bildung_Digital/Digitale_Kompetenzen/GSDK/KI_Basiscurriculum_Endbericht.pdf"}
+};
+
+/* ---------- Inhalte ---------- */
+const HALTE = [
+{
+  id:"h1", titel:"Was ist KI überhaupt?", kurz:"Wo KI längst drinsteckt", dauer:4,
+  mitnehmen:["KI ist Software, die Muster aus Beispielen gelernt hat.","Sie steckt längst im Alltag, etwa im Spamfilter oder im Navi.","Chatbots wie ChatGPT sind eine Art von KI: Sprachmodelle, die Text erzeugen."],
+  schritte:[
+    {typ:"text", h:"Du bist nicht allein", html:"<p>Rund 4 von 10 Menschen in Deutschland sagen, dass sie sich bei KI abgehängt fühlen. Wenn du bei dem Thema nur Bahnhof verstehst, bist du in guter Gesellschaft.</p><p>Dieser Kurs erklärt die Grundlagen in sechs kurzen Etappen. Du brauchst kein Vorwissen und musst nichts installieren.</p>", quelle:["bitkom"]},
+    {typ:"text", h:"KI ist kein Roboter", html:"<p>Künstliche Intelligenz, kurz KI, ist Software. Sie erledigt Aufgaben, für die man früher einen Menschen brauchte: Sprache verstehen, Bilder erkennen, Vorhersagen treffen.</p><p>Der Unterschied zu einem normalen Programm: Ein normales Programm folgt festen Regeln, die jemand hineingeschrieben hat. Ein KI-System hat seine Regeln selbst aus sehr vielen Beispielen gelernt.</p>", merke:"KI lernt Muster aus Beispielen. Niemand hat ihr jede Regel einzeln beigebracht."},
+    {typ:"sortieren", h:"Steckt hier KI drin?", eimer:["Ja, KI","Nein, keine KI"], karten:[
+      {t:"Der Spamfilter in deinem E-Mail-Postfach", e:0, warum:"Er hat an sehr vielen Mails gelernt, wie Werbung und Betrug aussehen."},
+      {t:"Ein Taschenrechner", e:1, warum:"Er rechnet nach festen Regeln. Gelernt hat er nichts."},
+      {t:"Die Stauprognose im Navi", e:0, warum:"Sie schätzt aus früheren Verkehrsdaten, wie voll die Straße gleich sein wird."},
+      {t:"Eine Zeitschaltuhr an der Lampe", e:1, warum:"Sie schaltet zur eingestellten Uhrzeit. Das ist eine feste Regel."},
+      {t:"Dein Handy entsperrt sich, wenn es dein Gesicht sieht", e:0, warum:"Das Gerät hat an Bildern gelernt, Gesichter zu unterscheiden."},
+      {t:"Film-Vorschläge beim Streaming", e:0, warum:"Das System lernt aus dem, was du und andere geschaut haben."}
+    ]},
+    {typ:"quiz", frage:"Seit wann gibt es den Begriff „Künstliche Intelligenz“?", optionen:["1956","1989","2007","2022"], richtig:0, warum:"Der Begriff stammt von einer Forschertagung im Jahr 1956 in den USA. Neu ist seit Ende 2022 nur, dass mit ChatGPT jeder so ein System selbst ausprobieren kann."},
+    {typ:"text", h:"Was an ChatGPT und Co. neu ist", html:"<p>Die meisten KI-Systeme sortieren etwas oder sagen etwas vorher. Generative KI erzeugt etwas Neues: Texte, Bilder, Musik, Videos.</p><p>ChatGPT, Gemini, Copilot oder Claude sind Chatbots. In ihnen steckt ein Sprachmodell, das auf Text spezialisiert ist. Wie das arbeitet, siehst du am nächsten Halt.</p>"},
+    {typ:"quiz", frage:"Was unterscheidet ein KI-System von einem normalen Programm?", optionen:["Es hat seine Regeln aus Beispielen gelernt","Es läuft nur auf besonders schnellen Computern","Es hat ein eigenes Bewusstsein","Es ist immer mit dem Internet verbunden"], richtig:0, warum:"Das Lernen aus Beispielen ist der Kern. Schnelle Rechner helfen dabei, sind aber nicht der Unterschied. Ein Bewusstsein hat keines dieser Systeme nachweislich."}
+  ]
+},
+{
+  id:"h2", titel:"Wie ein Sprachmodell tickt", kurz:"Tokens und das nächste Wort", dauer:5,
+  mitnehmen:["Ein Sprachmodell berechnet, welches Textstück wahrscheinlich als nächstes kommt.","Wahrscheinlich ist nicht dasselbe wie wahr.","Tokens sind die Häppchen, in denen das Modell rechnet und in denen seine Grenzen gemessen werden."],
+  schritte:[
+    {typ:"text", h:"Ein Sprachmodell rät das nächste Textstück", html:"<p>Ein Sprachmodell hat sehr viel Text verarbeitet: Bücher, Webseiten, Foren. Dabei hat es gelernt, welche Textstücke häufig aufeinander folgen.</p><p>Wenn du etwas fragst, berechnet es Stück für Stück, wie der Text wahrscheinlich weitergeht. Mehr passiert im Kern nicht. Das klingt simpel, reicht aber für erstaunlich brauchbare Antworten.</p>"},
+    {typ:"vorhersage", h:"Spiel Sprachmodell", frage:"Welches Wort kommt am wahrscheinlichsten als nächstes?", satz:"Zum Frühstück trinke ich am liebsten eine Tasse", optionen:[{w:"Kaffee",p:61},{w:"Tee",p:27},{w:"Kakao",p:11},{w:"Beton",p:1}], richtig:0, warum:"So eine Rangliste berechnet ein Sprachmodell für jedes nächste Textstück. Meist nimmt es eines der wahrscheinlichsten, aber nicht immer das allererste. Dieser eingebaute Zufall sorgt dafür, dass du auf dieselbe Frage verschiedene Antworten bekommst."},
+    {typ:"vorhersage", h:"Wahrscheinlich ist nicht wahr", frage:"Wie geht der Satz richtig weiter?", satz:"Die Hauptstadt von Australien heißt", optionen:[{w:"Sydney",p:47},{w:"Canberra",p:44},{w:"Melbourne",p:8},{w:"Wien",p:1}], richtig:1, warum:"Richtig ist Canberra. In Texten steht aber „Sydney“ viel öfter neben „Australien“. Ein Modell, das nur auf Häufigkeit schaut, liegt hier leicht daneben. Heutige Chatbots beantworten diese Frage meist richtig, das Prinzip bleibt trotzdem: Was oft zusammen vorkommt, klingt für das Modell wahrscheinlich."},
+    {typ:"text", h:"Tokens: die Häppchen, in denen KI rechnet", html:"<p>Ein Sprachmodell arbeitet nicht mit ganzen Wörtern, sondern mit Tokens. Das sind Textstückchen: mal ein ganzes Wort, mal nur ein Wortteil oder ein Satzzeichen.</p><p>Als Faustregel für englischen Text nennt OpenAI: Ein Token entspricht etwa vier Zeichen oder drei Vierteln eines Wortes. Lange deutsche Wörter zerfallen in mehrere Tokens.</p>", quelle:["tokens"]},
+    {typ:"tokens", h:"Probier es aus", start:"Donaudampfschifffahrt ist ein langes Wort."},
+    {typ:"text", h:"Warum du das wissen solltest", html:"<p>In Tokens wird gemessen, wie viel Text ein Modell auf einmal im Blick behalten kann. Diese Grenze heißt Kontextfenster. Wird ein Gespräch sehr lang, können frühe Teile verloren gehen, und der Chatbot „vergisst“ sie.</p><p>Auch die Kosten werden in Tokens abgerechnet, wenn Firmen solche Modelle nutzen.</p>", quelle:["tokens"]},
+    {typ:"quiz", frage:"Was macht ein Sprachmodell im Kern?", optionen:["Es berechnet, welches Textstück wahrscheinlich als nächstes kommt","Es schlägt die Antwort in einem Lexikon nach","Es fragt im Hintergrund einen Menschen","Es spielt gespeicherte Antworten ab"], richtig:0, warum:"Jede Antwort entsteht neu, Textstück für Textstück. Es gibt kein Lexikon im Hintergrund und keine fertigen Antworten."},
+    {typ:"quiz", frage:"Du stellst zweimal dieselbe Frage und bekommst zwei verschiedene Antworten. Woran liegt das?", optionen:["An einem eingebauten Zufall bei der Auswahl der nächsten Textstücke","Der Chatbot hat einen Fehler","Jemand anderes hat die Frage inzwischen anders beantwortet","Die Internetverbindung war schlecht"], richtig:0, warum:"Das Modell wählt nicht immer das wahrscheinlichste Textstück, sondern mit etwas Zufall eines der wahrscheinlichen. Das ist gewollt und kein Defekt."}
+  ]
+},
+{
+  id:"h3", titel:"Warum KI sich Dinge ausdenkt", kurz:"Halluzinationen erkennen", dauer:4,
+  mitnehmen:["Ein Chatbot klingt bei falschen Antworten genauso sicher wie bei richtigen.","Quellen, Zahlen und Zitate immer selbst nachsehen.","Je mehr von einer Antwort abhängt, desto eher brauchst du eine zweite Quelle."],
+  schritte:[
+    {typ:"text", h:"Überzeugend heißt nicht richtig", html:"<p>Ein Sprachmodell ist darauf trainiert, Text zu schreiben, der plausibel klingt. Eine eingebaute Prüfung, ob der Inhalt stimmt, hat es nicht.</p><p>Deshalb kann es Dinge erfinden: ein Zitat, eine Jahreszahl, eine Studie, die es nie gab. Fachleute nennen das Halluzination. Der Tonfall bleibt dabei genauso sicher wie bei einer richtigen Antwort.</p>"},
+    {typ:"text", h:"Wie oft passiert das?", html:"<p>Öffentlich-rechtliche Sender aus 18 Ländern haben 2025 rund 3.000 Antworten von ChatGPT, Copilot, Gemini und Perplexity auf Nachrichtenfragen geprüft. In 45 Prozent fanden sie mindestens einen erheblichen Mangel, am häufigsten bei den Quellenangaben.</p><p>Das Ergebnis gilt für Fragen zu aktuellen Nachrichten, nicht für jede Aufgabe. Wenn du einen eigenen Text umformulieren lässt, kannst du das Ergebnis selbst beurteilen.</p>", quelle:["ebu","ebuOrf"]},
+    {typ:"quiz", frage:"Ein Chatbot nennt dir eine Studie mit Autorin und Jahr. Was machst du?", optionen:["Ich suche selbst nach, ob es die Studie gibt","Ich übernehme sie, sie klingt genau","Ich frage den Chatbot, ob er sich sicher ist","Ich nutze sie nur, wenn sie zu meiner Meinung passt"], richtig:0, warum:"Erfundene Quellen sehen echten täuschend ähnlich. Den Chatbot zu fragen, ob er sich sicher ist, hilft wenig: Auch darauf kann er überzeugend falsch antworten."},
+    {typ:"sortieren", h:"Worauf kannst du dich verlassen?", eimer:["Gut geeignet","Immer gegenprüfen"], karten:[
+      {t:"Ideen für ein Geburtstagsgeschenk sammeln", e:0, warum:"Hier gibt es kein Richtig oder Falsch. Du entscheidest selbst, was passt."},
+      {t:"Die richtige Dosis eines Medikaments", e:1, warum:"Ein Fehler kann hier schaden. Das gehört in die Packungsbeilage, in die Apotheke oder in die Arztpraxis."},
+      {t:"Eine eigene Mail freundlicher formulieren", e:0, warum:"Du kennst den Inhalt und siehst sofort, ob das Ergebnis stimmt."},
+      {t:"Was heute in den Nachrichten passiert ist", e:1, warum:"Gerade bei Nachrichten fanden die Sender viele Mängel. Schau in die Originalquelle."},
+      {t:"Ob dein Vermieter die Miete erhöhen darf", e:1, warum:"Rechtsfragen hängen vom Einzelfall ab. Nutze die Antwort als ersten Überblick und frag eine Beratungsstelle."},
+      {t:"Einen langen Text in einfachen Worten zusammenfassen", e:0, warum:"Das können Sprachmodelle gut. Bei wichtigen Details schaust du trotzdem kurz ins Original."}
+    ]},
+    {typ:"text", h:"Drei Fragen, bevor du etwas glaubst", html:"<ul><li><b>Woher?</b> Lass dir die Quelle nennen und öffne sie selbst.</li><li><b>Wie aktuell?</b> Ein Sprachmodell kennt nur Texte bis zu einem Stichtag. Manche Chatbots suchen zusätzlich im Internet, andere nicht.</li><li><b>Wie wichtig?</b> Je mehr von der Antwort abhängt, desto eher holst du eine zweite Quelle dazu.</li></ul><p>Auch die Verbraucherzentrale rät, Informationen zu prüfen, bevor du sie verwendest oder weitergibst.</p>", quelle:["vz"]},
+    {typ:"quiz", frage:"Warum erfinden Sprachmodelle manchmal Dinge?", optionen:["Sie erzeugen Text, der plausibel klingt, und prüfen nicht, ob er stimmt","Sie wollen Menschen absichtlich täuschen","Sie sind kaputt","Sie haben zu wenig Daten über Deutschland"], richtig:0, warum:"Dahinter steckt keine Absicht. Das Modell ist auf plausiblen Text ausgelegt, und plausibel und wahr sind zwei verschiedene Dinge."}
+  ]
+},
+{
+  id:"h4", titel:"Gut fragen", kurz:"So bekommst du brauchbare Antworten", dauer:4,
+  mitnehmen:["Die KI weiß nur, was in deiner Nachricht steht.","Lage, Ziel, Ton und Form machen fast jede Anfrage besser.","Die erste Antwort ist ein Entwurf. Nachhaken gehört dazu."],
+  schritte:[
+    {typ:"text", h:"Die KI kann nicht in deinen Kopf schauen", html:"<p>Ein Chatbot weiß nur, was in deiner Nachricht steht. Alles, was fehlt, muss er raten. Je mehr er raten muss, desto allgemeiner wird die Antwort.</p><p>Vier Angaben helfen fast immer:</p><ul><li><b>Lage:</b> Worum geht es? Ein, zwei Sätze reichen.</li><li><b>Ziel:</b> Was soll am Ende herauskommen?</li><li><b>Ton:</b> Wie soll es klingen?</li><li><b>Form:</b> Wie lang, in welchem Aufbau?</li></ul>", quelle:["prompt"]},
+    {typ:"bauen", h:"Bau eine bessere Anfrage", intro:"Tippe die Bausteine an und sieh zu, wie aus einer vagen Bitte ein klarer Auftrag wird.", basis:"Schreib eine Mail an meinen Vermieter.", bausteine:[
+      {name:"Lage", text:"Die Heizung in meiner Wohnung ist seit drei Tagen kalt."},
+      {name:"Ziel", text:"Ich möchte, dass diese Woche jemand zur Reparatur kommt."},
+      {name:"Ton", text:"Höflich, aber bestimmt."},
+      {name:"Form", text:"Höchstens fünf Sätze."}
+    ]},
+    {typ:"quiz", frage:"Welche Anfrage bringt die brauchbarste Antwort?", optionen:["Gib mir ein Rezept.","Gib mir ein vegetarisches Abendessen für vier Personen, fertig in 30 Minuten. Bitte als Einkaufsliste und nummerierte Schritte.","Rezept schnell bitte!!!","Was soll ich kochen?"], richtig:1, warum:"Die zweite Anfrage nennt Lage, Ziel und Form. Bei den anderen muss die KI fast alles raten."},
+    {typ:"text", h:"Nachhaken gehört dazu", html:"<p>Die erste Antwort ist ein Entwurf. Du darfst nachbessern lassen:</p><ul><li>„Kürzer, bitte.“</li><li>„Erklär das so, dass es ein Zwölfjähriger versteht.“</li><li>„Gib mir drei Varianten.“</li><li>„Woher hast du das? Nenn mir die Quelle.“</li></ul><p>Ein Beispiel dafür, wie das Ergebnis aussehen soll, hilft oft mehr als eine lange Beschreibung.</p>", quelle:["prompt"]},
+    {typ:"quiz", frage:"Die Antwort ist dir zu kompliziert. Was ist der beste nächste Schritt?", optionen:["Im selben Gespräch um eine einfachere Erklärung bitten","Sofort den Chatbot wechseln","Dieselbe Frage wortgleich noch einmal stellen","Aufgeben"], richtig:0, warum:"Der Chatbot hat den bisherigen Verlauf im Blick. Ein kurzer Zusatz wie „einfacher, bitte“ reicht meistens."}
+  ]
+},
+{
+  id:"h5", titel:"Deine Daten und Deepfakes", kurz:"Was du eingibst und was du glaubst", dauer:5,
+  mitnehmen:["Sensible Daten gehören nicht in einen Chatbot.","Zeitdruck, Geld und Geheimhaltung sind zusammen ein Warnsignal.","Ein fehlender KI-Hinweis beweist nicht, dass etwas echt ist."],
+  schritte:[
+    {typ:"text", h:"Was mit deinen Eingaben passiert", html:"<p>Was du in einen Chatbot tippst, wird an die Rechner des Anbieters geschickt. Je nach Anbieter und Einstellung können deine Eingaben auch genutzt werden, um künftige Modelle zu trainieren.</p><p>Du kannst dem widersprechen, musst das aber selbst tun. Die Verbraucherzentralen empfehlen, keine persönlichen und sensiblen Daten einzugeben.</p>", quelle:["vz"]},
+    {typ:"sortieren", h:"Würdest du das eintippen?", eimer:["Kein Problem","Lieber nicht"], karten:[
+      {t:"Was koche ich aus Kartoffeln, Lauch und Eiern?", e:0, warum:"Daran ist nichts Persönliches."},
+      {t:"Ein Arztbrief mit deinem Namen und der Diagnose", e:1, warum:"Gesundheitsdaten sind besonders heikel. Wenn du den Brief verstehen willst, entferne vorher Name, Geburtsdatum und Adresse."},
+      {t:"Deine IBAN und dein Kontostand", e:1, warum:"Kontodaten haben in einem Chatbot nichts verloren."},
+      {t:"Eine Frage zur Abseitsregel", e:0, warum:"Allgemeines Wissen kannst du bedenkenlos fragen."},
+      {t:"Die Kundenliste aus deiner Firma", e:1, warum:"Das sind Daten anderer Menschen und oft Geschäftsgeheimnisse. Viele Arbeitgeber haben dafür eigene Regeln."},
+      {t:"Ein Bewerbungsanschreiben ohne Adresse und Telefonnummer", e:0, warum:"Ohne Kontaktdaten ist das unkritisch."}
+    ]},
+    {typ:"text", h:"Deepfakes: wenn Bild und Stimme lügen", html:"<p>Mit KI lassen sich Bilder, Videos und Stimmen erzeugen oder verändern, die echt wirken. Betrüger nutzen das etwa für gefälschte Werbung mit Prominenten.</p><p>Das Bundesamt für Sicherheit in der Informationstechnik nennt als mögliche Hinweise: sichtbare Übergänge am Rand des Gesichts, verwaschene Konturen, wenig Mimik und Licht, das nicht zur Umgebung passt. Je besser die Technik wird, desto seltener sieht man solche Fehler.</p>", quelle:["bsi"]},
+    {typ:"text", h:"Wichtiger als jedes Bilddetail", html:"<ul><li><b>Wer hat es veröffentlicht?</b> Ein bekanntes Medium oder ein unbekanntes Konto?</li><li><b>Berichten andere darüber?</b> Echte Ereignisse tauchen an mehreren seriösen Stellen auf.</li><li><b>Soll ich schnell handeln?</b> Zeitdruck und Geldforderungen sind Warnzeichen.</li></ul>"},
+    {typ:"quiz", frage:"Dein „Enkel“ ruft an, die Stimme klingt vertraut. Er braucht sofort Geld, und du sollst niemandem etwas sagen. Was tust du?", optionen:["Auflegen und ihn unter der Nummer zurückrufen, die ich schon kenne","Schnell überweisen, es ist ja seine Stimme","Am Telefon meine Kontodaten zum Abgleich nennen","Abwarten, ob er noch einmal anruft"], richtig:0, warum:"Stimmen lassen sich mit KI nachahmen. Zeitdruck, Geld und Geheimhaltung zusammen sind das klassische Muster eines Betrugs. Ein Rückruf über die bekannte Nummer klärt es in einer Minute."},
+    {typ:"text", h:"Was das Gesetz verlangt", html:"<p>In der EU gelten seit dem 2. August 2026 Transparenzpflichten: Chatbots müssen erkennbar machen, dass du mit einer KI sprichst. Wer Deepfakes veröffentlicht, muss sie kennzeichnen.</p><p>Betrüger halten sich nicht an Gesetze. Ein fehlender Hinweis beweist also nicht, dass etwas echt ist.</p>", quelle:["art50"]},
+    {typ:"quiz", frage:"Ein Video zeigt eine bekannte Politikerin mit einer skandalösen Aussage. Ein KI-Hinweis fehlt. Was folgt daraus?", optionen:["Nichts Sicheres. Ich prüfe, ob seriöse Medien darüber berichten","Es muss echt sein, sonst wäre es gekennzeichnet","Es ist sicher gefälscht","Ich teile es, damit andere es prüfen"], richtig:0, warum:"Weder echt noch gefälscht lässt sich am fehlenden Hinweis ablesen. Teilen verbreitet eine mögliche Fälschung nur weiter."}
+  ]
+},
+{
+  id:"h6", titel:"Mythen-Check", kurz:"Acht Behauptungen auf dem Prüfstand", dauer:5,
+  mitnehmen:["Bei steilen Behauptungen fragen: Wer sagt das, und was wurde gemessen?","Das gilt für Schreckensmeldungen genauso wie für Werbeversprechen.","Eigene Angaben von Firmen sind ein Hinweis, kein Beweis."],
+  schritte:[
+    {typ:"text", h:"Stimmt das eigentlich?", html:"<p>Über KI kursieren viele Behauptungen. Manche stimmen, manche sind übertrieben, manche schlicht falsch.</p><p>Entscheide bei jeder Karte selbst, bevor du die Auflösung siehst.</p>"},
+    {typ:"sortieren", h:"Stimmt das?", eimer:["Stimmt","Teils","Stimmt nicht"], karten:[
+      {t:"KI gibt es erst seit ChatGPT.", e:2, warum:"Den Begriff gibt es seit 1956, und Spamfilter oder Navis nutzen KI seit vielen Jahren. Neu ist seit Ende 2022, dass jeder mit einem Sprachmodell chatten kann."},
+      {t:"Jede KI-Anfrage verbraucht eine Flasche Wasser.", e:2, warum:"Für eine Textanfrage nennt Google 0,26 Milliliter, also etwa fünf Tropfen, OpenAI rund 0,3 Milliliter. Das sind eigene Angaben der Firmen, unabhängig geprüft sind sie nicht. Mistral rechnet breiter und kommt auf 45 Milliliter für eine längere Antwort. Auch das ist weit von einer Flasche entfernt.", quelle:["wasser","wasser2","strom"]},
+      {t:"Eine Textanfrage an einen Chatbot braucht etwa so viel Strom wie ein paar Sekunden Fernsehen.", e:0, warum:"Google nennt 0,24 Wattstunden, das entspricht knapp neun Sekunden Fernsehen. In der Summe zählt es trotzdem: Alle Rechenzentren zusammen, nicht nur die für KI, verbrauchten 2024 weltweit rund 415 Terawattstunden, etwa 1,5 Prozent des gesamten Stroms.", quelle:["wasser","strom"]},
+      {t:"Ein Chatbot schlägt seine Antworten in einer Datenbank nach.", e:2, warum:"Er erzeugt jede Antwort neu, Textstück für Textstück. Manche Chatbots suchen zusätzlich im Internet und fassen die Treffer zusammen, aber auch das ist erzeugter Text."},
+      {t:"KI ist neutral, weil sie keine Vorurteile hat.", e:2, warum:"KI lernt aus Daten, und Daten enthalten Schieflagen. Eine bekannte Studie von 2018 prüfte drei kommerzielle Systeme, die auf Fotos das Geschlecht erkennen sollten. Bei Männern mit heller Haut lag die Fehlerquote bei höchstens 0,8 Prozent, bei Frauen mit dunkler Haut bei bis zu 34,7 Prozent.", quelle:["shades"]},
+      {t:"Was ich in einen Chatbot tippe, kann zum Training verwendet werden.", e:0, warum:"Je nach Anbieter und Einstellung ist das so. Du kannst widersprechen, musst es aber selbst tun. Deshalb gehören sensible Daten nicht in einen Chatbot.", quelle:["vz"]},
+      {t:"KI nimmt uns allen die Arbeit weg.", e:1, warum:"Das Weltwirtschaftsforum erwartet bis 2030 weltweit 92 Millionen wegfallende und 170 Millionen neue Stellen, unter dem Strich ein Plus von 78 Millionen. Das sind Prognosen aus einer Arbeitgeber-Befragung, und sie umfassen neben Technik auch Trends wie den Klimaschutz. Sicher ist nur, dass sich viele Tätigkeiten verändern.", quelle:["wef"]},
+      {t:"Deepfakes müssen in der EU gekennzeichnet werden.", e:0, warum:"Seit dem 2. August 2026 gilt das. Wer ein täuschend echtes KI-Bild oder KI-Video veröffentlicht, muss offenlegen, dass es künstlich erzeugt ist. Betrüger tun das natürlich nicht.", quelle:["art50"]}
+    ]},
+    {typ:"text", h:"Die wichtigste Fähigkeit", html:"<p>Du musst nicht jede Zahl kennen. Es reicht, bei jeder steilen Behauptung über KI drei Dinge zu fragen: Wer sagt das? Woher stammt die Zahl? Was wurde gemessen?</p><p>Das gilt für Schreckensmeldungen genauso wie für Werbeversprechen.</p>", merke:"Du bist am Ziel. Jetzt verstehst du mehr als nur Bahnhof."}
+  ]
+}
+];
+
+const GLOSSAR = [
+  ["Algorithmus","Eine Folge fester Schritte, nach der ein Computer eine Aufgabe löst. Ein Kochrezept für Maschinen."],
+  ["Bias","Eine Schieflage in den Ergebnissen einer KI, die aus einseitigen Trainingsdaten stammt."],
+  ["Chatbot","Ein Programm, mit dem du dich in normaler Sprache unterhältst. In modernen Chatbots steckt ein Sprachmodell."],
+  ["Deepfake","Ein mit KI erzeugtes oder verändertes Bild, Video oder Tonstück, das echt wirken soll."],
+  ["Generative KI","KI, die Neues erzeugt: Text, Bilder, Musik, Video."],
+  ["Halluzination","Eine Antwort, die überzeugend klingt, aber erfunden oder falsch ist."],
+  ["KI-Agent","Ein KI-System, das nicht nur antwortet, sondern selbst Schritte ausführt, zum Beispiel im Internet sucht oder einen Termin einträgt."],
+  ["Kontextfenster","Die Textmenge, die ein Sprachmodell auf einmal im Blick behalten kann. Gemessen wird sie in Tokens."],
+  ["Maschinelles Lernen","Das Verfahren hinter fast aller heutigen KI: Ein Programm findet Muster in Beispielen, statt Regeln vorgegeben zu bekommen."],
+  ["Modell","Das Ergebnis des Trainings: die gelernten Muster, mit denen ein KI-System arbeitet."],
+  ["Neuronales Netz","Eine Rechenstruktur aus sehr vielen verknüpften Zahlen, grob dem Gehirn nachempfunden. Grundlage der meisten heutigen KI-Modelle."],
+  ["Prompt","Deine Eingabe an eine KI: die Frage oder der Auftrag."],
+  ["Sprachmodell","Ein KI-Modell, das auf Text trainiert ist und das wahrscheinlich nächste Textstück berechnet. Englisch: Large Language Model, kurz LLM."],
+  ["Token","Ein Textstückchen, in dem ein Sprachmodell rechnet: ein Wort, ein Wortteil oder ein Satzzeichen."],
+  ["Training","Die Phase, in der ein Modell aus sehr vielen Beispielen lernt."],
+  ["Wissensstand","Der Stichtag, bis zu dem die Trainingstexte eines Modells reichen. Was danach geschah, kennt es nur, wenn es im Internet suchen kann."]
+];
+
+/* ---------- Zustand ---------- */
+const SPEICHER = "nurbahnhof-v1";
+const app = document.getElementById("app");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function laden(){ try{ return JSON.parse(localStorage.getItem(SPEICHER)) || {}; }catch(e){ return {}; } }
+function sichern(){ try{ localStorage.setItem(SPEICHER, JSON.stringify(fort)); }catch(e){} }
+let fort = Object.assign({erledigt:{}, tage:0, letzterTag:null, rueck:{}, zaehlen:null, id:null, q:"", gemeldet:{}}, laden());
+
+const ANSICHTEN = ["fahrplan","glossar","quellen","datenschutz"];
+let z = {ansicht:"fahrplan", halt:null, schritt:0, s:{}, lauf:{richtig:0,gesamt:0}, ende:false, kopiert:"", zurueck:false, frage:null, startzeit:0, rueckText:""};
+
+/* ---------- Messung: nur mit Einwilligung und nur, wenn eine Adresse eingetragen ist ---------- */
+const QUELLE = (() => { try{ return (new URLSearchParams(location.search).get("q") || "").replace(/[^a-z0-9-]/gi, "").slice(0, 24).toLowerCase(); }catch(e){ return ""; } })();
+const messBereit = () => !!KONFIG.messUrl;
+const messAktiv = () => messBereit() && fort.zaehlen === "ja" && !!fort.id;
+function neueId(){
+  const a = new Uint8Array(8);
+  try{ crypto.getRandomValues(a); }catch(e){ for(let i = 0; i < 8; i++) a[i] = Math.floor(Math.random() * 256); }
+  return Array.from(a, b => b.toString(16).padStart(2, "0")).join("");
+}
+function melde(e, d){
+  if(!messAktiv()) return;
+  const p = Object.assign({v:KONFIG.version, id:fort.id, q:fort.q || "", e:e}, d || {});
+  try{
+    fetch(KONFIG.messUrl, {method:"POST", mode:"no-cors", keepalive:true, headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(p)}).catch(() => {});
+  }catch(err){}
+}
+
+const alleErledigt = () => HALTE.every(h => fort.erledigt[h.id]);
+const anzahlErledigt = () => HALTE.filter(h => fort.erledigt[h.id]).length;
+const naechsterHalt = () => { const i = HALTE.findIndex(h => !fort.erledigt[h.id]); return i < 0 ? 0 : i; };
+
+/* ---------- Bausteine ---------- */
+function quelleHTML(keys){
+  if(!keys || !keys.length) return "";
+  const links = keys.map(k => `<a href="${Q[k].url}" target="_blank" rel="noopener">${esc(Q[k].kurz)}</a>`).join(", ");
+  return `<p class="quelle">${keys.length > 1 ? "Quellen" : "Quelle"}: ${links}</p>`;
+}
+function rueckHTML(ok, text, keys, kopf){
+  return `<div class="rueck ${ok ? "gut" : "schlecht"}" role="status"><p class="rueck-kopf"><span class="lampe"></span>${kopf || (ok ? "Richtig." : "Nicht ganz.")}</p><p>${text}</p>${quelleHTML(keys)}</div>`;
+}
+function streckeHTML(){
+  return `<div class="strecke" aria-hidden="true">` + HALTE.map((h,i) => `${i ? "<b></b>" : ""}<i class="${fort.erledigt[h.id] ? "voll" : ""}"></i>`).join("") + `</div>`;
+}
+
+/* ---------- Seiten ---------- */
+function fahrplanHTML(){
+  const n = anzahlErledigt(), nx = naechsterHalt();
+  const knopf = n === 0 ? "Losfahren" : alleErledigt() ? "Noch einmal ab Halt 1" : `Weiter mit Halt ${nx + 1}`;
+  const zeilen = HALTE.map((h,i) => {
+    const e = fort.erledigt[h.id];
+    const stand = e ? `<span class="erledigt">${e.gesamt ? `${e.richtig} von ${e.gesamt}` : "geschafft"}</span>` : `<span>offen</span>`;
+    return `<li><button class="zeile ${!alleErledigt() && i === nx ? "naechster" : ""}" data-akt="start" data-halt="${i}" aria-label="Halt ${i+1}: ${esc(h.titel)}, ${h.dauer} Minuten, ${e ? "geschafft" : "offen"}">
+      <span class="nr">${i+1}</span>
+      <span class="thema"><b>${esc(h.titel)}</b><span>${esc(h.kurz)}</span></span>
+      <span class="rand"><span>${h.dauer} Min</span>${stand}</span>
+    </button></li>`;
+  }).join("");
+  const tage = fort.tage > 1 ? ` Du bist ${fort.tage} Tage in Folge dabei.` : "";
+  return `
+  <header class="tafel">
+    <h1>Bei KI nur Bahnhof?</h1>
+    <p class="tafel-text">Sechs Halte, je rund vier Minuten. Danach weißt du, wovon alle reden und worauf du achten musst.</p>
+    <div class="stand">${streckeHTML()}<p>${n} von ${HALTE.length} Halten geschafft.${tage}</p></div>
+    <button class="knopf" data-akt="start" data-halt="${alleErledigt() ? 0 : nx}">${knopf}</button>
+    <div class="fahrplan-kopf"><h2>Fahrplan</h2><span>Halt, Thema, Dauer</span></div>
+    <ol class="fahrplan">${zeilen}</ol>
+  </header>
+  <div class="seite">
+    ${alleErledigt() ? fahrkarteHTML() : ""}
+    <section class="kasten">
+      <h3>Jede Zahl hat eine Quelle</h3>
+      <p>Bei jeder Angabe in diesem Kurs steht, woher sie stammt. Die ganze Liste findest du unter Quellen. Begriffe zum Nachschlagen stehen im Glossar.</p>
+    </section>
+  </div>`;
+}
+
+function fahrkarteHTML(){
+  const r = HALTE.reduce((a,h) => a + (fort.erledigt[h.id].richtig || 0), 0);
+  const g = HALTE.reduce((a,h) => a + (fort.erledigt[h.id].gesamt || 0), 0);
+  const v = fort.rueck.verst, w = fort.rueck.weiter;
+  const text = `KI-Kurs „Nur Bahnhof“ geschafft: ${r} von ${g} richtig. Verständlich: ${v || "–"} von 5. Weitere Halte: ${w || "–"}.${z.rueckText ? " Anmerkung: " + z.rueckText : ""}`;
+  const senden = messAktiv();
+  let status = "";
+  if(z.kopiert === "gesendet") status = `<p class="leise" role="status">Gesendet. Danke für deine Rückmeldung.</p>`;
+  if(z.kopiert === "fehlt") status = `<p class="leise" role="status">Beantworte bitte zuerst die beiden Fragen.</p>`;
+  if(z.kopiert === "ok") status = `<p class="leise" role="status">Kopiert. Füge den Text in eine Nachricht an die Person ein, die dir den Kurs geschickt hat.</p>`;
+  if(z.kopiert === "manuell") status = `<p class="leise" role="status">Kopieren hat nicht geklappt. Markiere den Text und kopiere ihn selbst:</p><p class="kopie">${esc(text)}</p>`;
+  return `
+  <section class="fahrkarte" aria-label="Deine Fahrkarte">
+    <div class="fahrkarte-kopf"><div><h3>Fahrkarte KI-Grundlagen</h3><p class="leise">Alle sechs Halte geschafft</p></div><div class="fahrkarte-zahl">${r}/${g}</div></div>
+    <p>Das ist eine Testfassung. Deine Antworten helfen, den Kurs besser zu machen.</p>
+    <div class="frage-zeile"><p id="f-verst"><b>Wie verständlich war der Kurs?</b> 1 heißt gar nicht, 5 heißt sehr.</p>
+      <div class="wahl" role="group" aria-labelledby="f-verst">${[1,2,3,4,5].map(i => `<button data-akt="rueck" data-feld="verst" data-wert="${i}" aria-pressed="${v == i}">${i}</button>`).join("")}</div></div>
+    <div class="frage-zeile"><p id="f-weiter"><b>Würdest du weitere Halte fahren?</b></p>
+      <div class="wahl" role="group" aria-labelledby="f-weiter">${["Ja","Vielleicht","Nein"].map(t => `<button data-akt="rueck" data-feld="weiter" data-wert="${t}" aria-pressed="${w === t}">${t}</button>`).join("")}</div></div>
+    <div class="frage-zeile"><label for="rueck-text"><b>Was hat gefehlt oder gestört?</b> Freiwillig. Bitte keine persönlichen Daten.</label>
+      <textarea class="eingabe" id="rueck-text" rows="3" maxlength="400">${esc(z.rueckText)}</textarea></div>
+    <button class="knopf ${senden ? "" : "leise"}" data-akt="${senden ? "senden" : "kopieren"}" data-text="${esc(text)}">${senden ? "Rückmeldung senden" : "Rückmeldung kopieren"}</button>
+    ${status}
+  </section>`;
+}
+
+function glossarHTML(){
+  return `
+  <div class="seite">
+    <h2>Glossar</h2>
+    <p class="leise">Sechzehn Begriffe, die dir bei KI immer wieder begegnen.</p>
+    <label for="suche" class="leise">Begriff suchen</label>
+    <input class="eingabe" id="suche" type="search" autocomplete="off" placeholder="zum Beispiel Token">
+    <ul class="glossar" id="glossar-liste">${GLOSSAR.map(([b,t]) => `<li data-b="${esc((b + " " + t).toLowerCase())}"><h3>${esc(b)}</h3><p>${esc(t)}</p></li>`).join("")}</ul>
+    <p class="leise" id="glossar-leer" hidden>Kein Begriff gefunden. Versuch ein anderes Wort.</p>
+  </div>`;
+}
+
+function quellenHTML(){
+  const reihenfolge = ["bitkom","tokens","ebu","ebuOrf","vz","prompt","bsi","art50","wasser","wasser2","strom","shades","wef","curriculum"];
+  return `
+  <div class="seite">
+    <h2>Quellen</h2>
+    <p>Stand der Inhalte: November 2026. Zahlen zu KI ändern sich schnell. Prüfe das Datum, bevor du eine Angabe weitergibst.</p>
+    <ol class="quellen">${reihenfolge.map(k => `<li><a href="${Q[k].url}" target="_blank" rel="noopener">${esc(Q[k].titel)}</a><small>${esc(Q[k].wer)}</small></li>`).join("")}</ol>
+    <section class="kasten">
+      <h3>Wie der Kurs aufgebaut ist</h3>
+      <p>Die Themen folgen den ersten vier Lernfeldern des KI-Basiscurriculums: KI erkennen und verstehen, verantwortungsvoll mit KI umgehen, KI-gestützte Informationssuche bewerten, mit KI kommunizieren.</p>
+      <p>Die Prozentwerte im Spiel „Spiel Sprachmodell“ sind ausgedachte Beispiele. Die Token-Zerlegung ist vereinfacht. Beides ist an Ort und Stelle gekennzeichnet.</p>
+    </section>
+    <section class="kasten">
+      <h3>Über diese Testfassung</h3>
+      <p>Texte und Code wurden mit KI-Unterstützung erstellt und mit den oben genannten Quellen abgeglichen. Vor einem öffentlichen Einsatz sollte ein Mensch alle Inhalte gegenlesen.</p>
+      <p>Dein Fortschritt wird in diesem Browser gespeichert. Ob der Test anonym mitzählen darf, entscheidest du selbst. Mehr dazu steht unter Datenschutz.</p>
+      <button class="knopf leise" data-akt="zuruecksetzen">${z.zurueck ? "Wirklich alles löschen?" : "Fortschritt zurücksetzen"}</button>
+    </section>
+  </div>`;
+}
+
+function datenschutzHTML(){
+  const b = KONFIG.betreiber;
+  const wer = b.name ? `${esc(b.name)}<br>${esc(b.anschrift).replace(/\n/g, "<br>")}<br>${esc(b.mail)}` : "Die Angaben werden vor der Veröffentlichung ergänzt.";
+  let zaehlung;
+  if(!messBereit()) zaehlung = `<p>In dieser Fassung wird nichts gezählt und nichts übertragen.</p>`;
+  else zaehlung = `
+      <p>Der Test zählt nur mit, wenn du zugestimmt hast. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 Buchst. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit hier widerrufen.</p>
+      <ul><li><b>Was:</b> welche Halte du startest und schaffst, Punktzahl, Dauer, deine Antworten am Ende, eine zufällige Kennung und gegebenenfalls ein Kürzel dafür, über welchen Link du gekommen bist.</li>
+      <li><b>Was nicht:</b> Name, E-Mail-Adresse, Standort, Eingaben im Token-Feld. Es werden keine Cookies gesetzt.</li>
+      <li><b>Wohin:</b> in eine Google-Tabelle des Anbieters (Google Ireland Limited, Verarbeitung auch in den USA möglich). Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht.</li>
+      <li><b>Wie lange:</b> ${esc(KONFIG.loeschfrist)}.</li></ul>
+      <p><b>Stand:</b> ${fort.zaehlen === "ja" ? "Du zählst anonym mit." : fort.zaehlen === "nein" ? "Du hast die Zählung abgelehnt." : "Du wurdest noch nicht gefragt."}</p>
+      ${fort.id ? `<p class="kennung">Deine Kennung: <b>${esc(fort.id)}</b>. Nenne sie, wenn du deine Daten löschen lassen möchtest.</p>` : ""}
+      ${fort.zaehlen === "ja" ? `<button class="knopf leise" data-akt="zaehlen" data-wert="nein">Zählung ausschalten</button>` : `<button class="knopf leise" data-akt="zaehlen" data-wert="ja">Anonym mitzählen</button>`}`;
+  return `
+  <div class="seite">
+    <h2>Impressum und Datenschutz</h2>
+    <section class="kasten"><h3>Anbieter</h3><p>${wer}</p></section>
+    <section class="kasten"><h3>Was beim Aufruf passiert</h3>
+      <p>Die Seite liegt bei GitHub Pages (GitHub Inc., USA). Beim Laden verarbeitet GitHub technisch deine IP-Adresse. Schriften und alle anderen Dateien kommen vom selben Server, es wird nichts von Dritten nachgeladen.</p>
+      <p>Dein Fortschritt und deine Entscheidung zur Zählung werden nur in deinem Browser gespeichert.</p></section>
+    <section class="kasten"><h3>Anonyme Zählung</h3>${zaehlung}</section>
+    <section class="kasten"><h3>Deine Rechte</h3><p>Du kannst Auskunft, Berichtigung und Löschung verlangen und dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Wende dich dafür an den Anbieter.</p></section>
+  </div>`;
+}
+
+function einwilligungHTML(){
+  const wer = KONFIG.betreiber.name ? esc(KONFIG.betreiber.name) : "der Anbieter";
+  return `
+  <div class="lektion">
+    <div class="kopf"><button data-akt="schliessen">Zum Fahrplan</button><span>Vor der Abfahrt</span></div>
+    <main class="blatt">
+      <h2>Darf dieser Test anonym mitzählen?</h2>
+      <p>Dieser Kurs ist eine Testfassung. Um ihn zu verbessern, möchte ${wer} wissen, wie weit Menschen kommen und wo sie aussteigen.</p>
+      <section class="kasten"><h3>Was gezählt wird</h3><ul><li>welche Halte du startest und schaffst</li><li>deine Punktzahl und wie lange du brauchst</li><li>deine Antworten auf die Fragen am Ende</li><li>eine zufällige Kennung, damit deine Halte zusammengehören</li></ul></section>
+      <section class="kasten"><h3>Was nicht gezählt wird</h3><ul><li>dein Name, deine E-Mail-Adresse, dein Standort</li><li>was du in Textfelder im Kurs tippst</li></ul></section>
+      <p class="leise">Die Daten landen in einer Google-Tabelle. Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht. Der Kurs funktioniert auch ohne Zählung, und du kannst sie jederzeit unter Datenschutz ausschalten.</p>
+    </main>
+    <div class="fuss zwei"><button class="knopf" data-akt="zaehlen" data-wert="ja">Ja, anonym mitzählen</button><button class="knopf leise" data-akt="zaehlen" data-wert="nein">Ohne Zählung starten</button></div>
+  </div>`;
+}
+
+function navHTML(){
+  const namen = {fahrplan:"Fahrplan", glossar:"Glossar", quellen:"Quellen", datenschutz:"Datenschutz"};
+  return `<nav class="nav" aria-label="Bereiche">${ANSICHTEN.map(a => `<a href="#${a}" ${z.ansicht === a ? 'aria-current="page"' : ""}>${namen[a]}</a>`).join("")}</nav>`;
+}
+
+/* ---------- Lektion ---------- */
+function zerlege(text){
+  const teile = text.match(/[A-Za-zÄÖÜäöüß]+|\d+|[^\sA-Za-zÄÖÜäöüß\d]/g) || [];
+  const out = [];
+  for(const t of teile){
+    if(/^[A-Za-zÄÖÜäöüß]+$/.test(t) && t.length > 6){
+      let i = 0;
+      while(i < t.length){
+        let n = 4;
+        const rest = t.length - i - 4;
+        if(rest > 0 && rest < 3) n = t.length - i;
+        out.push(t.slice(i, i + n));
+        i += n;
+      }
+    } else out.push(t);
+  }
+  return out;
+}
+function tokenAusgabe(text){
+  const t = zerlege(text);
+  const chips = t.map(x => `<span>${esc(x)}</span>`).join("");
+  return `<div class="tokens">${chips || '<span class="leise">Schreib etwas in das Feld.</span>'}</div><p class="zaehler">${text.length} Zeichen, ungefähr ${t.length} Tokens</p>`;
+}
+
+function schrittHTML(st){
+  const s = z.s;
+  if(st.typ === "text"){
+    return `<h2>${esc(st.h)}</h2>${st.html}${st.merke ? `<p class="merke">${esc(st.merke)}</p>` : ""}${quelleHTML(st.quelle)}`;
+  }
+  if(st.typ === "quiz"){
+    const fertig = s.gewaehlt != null;
+    const opts = st.optionen.map((o,i) => {
+      let k = "", zeichen = "";
+      if(fertig && i === st.richtig){ k = "richtig"; zeichen = "✓"; }
+      else if(fertig && i === s.gewaehlt){ k = "falsch"; zeichen = "✗"; }
+      return `<button class="option ${k}" data-akt="antwort" data-i="${i}" ${fertig ? "disabled" : ""}><span class="zeichen" aria-hidden="true">${zeichen}</span><span>${esc(o)}</span></button>`;
+    }).join("");
+    return `<h2>${esc(st.frage)}</h2><div class="optionen">${opts}</div>${fertig ? rueckHTML(s.gewaehlt === st.richtig, esc(st.warum), st.quelle) : ""}`;
+  }
+  if(st.typ === "sortieren"){
+    const k = s.karte || 0, karte = st.karten[k], fertig = !!s.beantwortet;
+    const eimer = st.eimer.map((e,i) => {
+      let kl = "";
+      if(fertig && i === karte.e) kl = "richtig";
+      else if(fertig && i === s.gewaehlt) kl = "falsch";
+      return `<button class="option ${kl}" data-akt="eimer" data-i="${i}" ${fertig ? "disabled" : ""}>${esc(e)}</button>`;
+    }).join("");
+    const ok = s.gewaehlt === karte.e;
+    return `<h2>${esc(st.h)}</h2><p class="zaehler">Karte ${k+1} von ${st.karten.length}</p><div class="aussage">${esc(karte.t)}</div><div class="eimer">${eimer}</div>${fertig ? rueckHTML(ok, esc(karte.warum), karte.quelle, ok ? "Richtig." : `Nicht ganz. Die Antwort ist: ${esc(st.eimer[karte.e])}.`) : ""}`;
+  }
+  if(st.typ === "vorhersage"){
+    const fertig = s.gewaehlt != null;
+    const opts = st.optionen.map((o,i) => {
+      let k = "", zeichen = "";
+      if(fertig && i === st.richtig){ k = "richtig"; zeichen = "✓"; }
+      else if(fertig && i === s.gewaehlt){ k = "falsch"; zeichen = "✗"; }
+      return `<button class="option ${k}" data-akt="antwort" data-i="${i}" ${fertig ? "disabled" : ""}><span class="zeichen" aria-hidden="true">${zeichen}</span><span>${esc(o.w)}</span></button>`;
+    }).join("");
+    const balken = fertig ? `<div class="balken" aria-label="So wahrscheinlich wären die Wörter für ein Sprachmodell">${st.optionen.map((o,i) => `<div class="balken-zeile ${i === st.richtig ? "treffer" : ""}"><span>${esc(o.w)}</span><span class="balken-bahn"><i style="width:${Math.max(o.p,1)}%"></i></span><span>${o.p <= 1 ? "unter 1 %" : o.p + " %"}</span></div>`).join("")}</div><p class="quelle">Die Prozentwerte sind ausgedachte Beispiele, keine Messung.</p>` : "";
+    return `<h2>${esc(st.h)}</h2><p>${esc(st.frage)}</p><p class="satz">${esc(st.satz)} <span class="luecke">${fertig ? esc(st.optionen[st.richtig].w) : "…"}</span></p><div class="optionen">${opts}</div>${fertig ? rueckHTML(s.gewaehlt === st.richtig, esc(st.warum)) + balken : ""}`;
+  }
+  if(st.typ === "tokens"){
+    const text = s.text != null ? s.text : st.start;
+    return `<h2>${esc(st.h)}</h2><label for="token-feld">Schreib einen Satz und sieh, in welche Stücke er ungefähr zerfällt.</label>
+      <textarea class="eingabe" id="token-feld" rows="2" maxlength="160">${esc(text)}</textarea>
+      <div id="token-aus" aria-live="polite">${tokenAusgabe(text)}</div>
+      <p class="quelle">Vereinfachte Zerlegung zum Ausprobieren. Echte Modelle teilen Text anders, und jeder Anbieter ein wenig verschieden.</p>`;
+  }
+  if(st.typ === "bauen"){
+    const an = s.an || [];
+    const chips = st.bausteine.map((b,i) => `<button class="baustein" data-akt="baustein" data-i="${i}" aria-pressed="${an.includes(i)}">${esc(b.name)}</button>`).join("");
+    const zusatz = st.bausteine.map((b,i) => an.includes(i) ? ` <mark>${esc(b.text)}</mark>` : "").join("");
+    const offen = st.bausteine.filter((b,i) => !an.includes(i)).map(b => b.name);
+    const stand = offen.length ? `Die KI muss noch raten: ${offen.join(", ")}.` : "Jetzt muss die KI nichts mehr raten.";
+    return `<h2>${esc(st.h)}</h2><p>${esc(st.intro)}</p><div class="bausteine">${chips}</div><p class="prompt">${esc(st.basis)}${zusatz}</p><p class="${offen.length ? "zaehler" : "merke"}" role="status">${stand}</p>`;
+  }
+  return "";
+}
+
+function kannWeiter(st){
+  if(st.typ === "quiz" || st.typ === "vorhersage") return z.s.gewaehlt != null;
+  if(st.typ === "sortieren") return !!z.s.beantwortet;
+  return true;
+}
+function weiterText(h, st){
+  if(st.typ === "sortieren" && (z.s.karte || 0) < st.karten.length - 1) return "Nächste Karte";
+  if(z.schritt === h.schritte.length - 1) return "Halt abschließen";
+  return "Weiter";
+}
+
+function lektionHTML(){
+  const h = HALTE[z.halt];
+  if(z.ende) return endeHTML(h);
+  const st = h.schritte[z.schritt];
+  return `
+  <div class="lektion">
+    <div class="kopf"><button data-akt="schliessen">Zum Fahrplan</button><span>Halt ${z.halt + 1} von ${HALTE.length}</span></div>
+    <div class="schritte" role="progressbar" aria-label="Fortschritt in diesem Halt" aria-valuemin="0" aria-valuemax="${h.schritte.length}" aria-valuenow="${z.schritt}">${h.schritte.map((_,i) => `<i class="${i <= z.schritt ? "war" : ""}"></i>`).join("")}</div>
+    <main class="blatt" id="blatt">${schrittHTML(st)}</main>
+    <div class="fuss"><button class="knopf" data-akt="weiter" ${kannWeiter(st) ? "" : "disabled"}>${weiterText(h, st)}</button></div>
+  </div>`;
+}
+
+function endeHTML(h){
+  const e = fort.erledigt[h.id];
+  const letzter = z.halt === HALTE.length - 1;
+  return `
+  <div class="lektion">
+    <div class="kopf"><button data-akt="schliessen">Zum Fahrplan</button><span>Halt ${z.halt + 1} von ${HALTE.length}</span></div>
+    <div class="schritte">${h.schritte.map(() => `<i class="war"></i>`).join("")}</div>
+    <main class="blatt">
+      <h2>Halt ${z.halt + 1} geschafft</h2>
+      ${z.lauf.gesamt ? `<p>Du hast ${z.lauf.richtig} von ${z.lauf.gesamt} Aufgaben richtig gelöst.${e && e.richtig > z.lauf.richtig ? ` Dein bestes Ergebnis hier: ${e.richtig}.` : ""}</p>` : ""}
+      <section class="kasten"><h3>Das nimmst du mit</h3><ul>${h.mitnehmen.map(m => `<li>${esc(m)}</li>`).join("")}</ul></section>
+    </main>
+    <div class="fuss"><button class="knopf" data-akt="${letzter ? "schliessen" : "naechster"}">${letzter ? "Zur Fahrkarte" : `Weiter zu Halt ${z.halt + 2}`}</button></div>
+  </div>`;
+}
+
+/* ---------- Ablauf ---------- */
+function zeichne(oben){
+  if(z.frage !== null) app.innerHTML = einwilligungHTML();
+  else if(z.halt !== null) app.innerHTML = lektionHTML();
+  else app.innerHTML = (z.ansicht === "glossar" ? glossarHTML() : z.ansicht === "quellen" ? quellenHTML() : z.ansicht === "datenschutz" ? datenschutzHTML() : fahrplanHTML()) + navHTML();
+  if(oben) window.scrollTo(0, 0);
+}
+function starteHalt(i){
+  if(messBereit() && fort.zaehlen == null){ z.frage = i; zeichne(true); return; }
+  z.frage = null; z.halt = i; z.schritt = 0; z.s = {}; z.lauf = {richtig:0, gesamt:0}; z.ende = false; z.startzeit = Date.now();
+  melde("halt_start", {h:i + 1});
+  zeichne(true);
+}
+function setzeZaehlung(wert){
+  fort.zaehlen = wert;
+  if(wert === "ja"){
+    if(!fort.id) fort.id = neueId();
+    if(!fort.q) fort.q = QUELLE;
+    if(!fort.gemeldet.start){ fort.gemeldet.start = true; melde("start"); }
+  }
+  sichern();
+}
+function werte(ok){ z.lauf.gesamt++; if(ok) z.lauf.richtig++; }
+function heute(off){ const d = new Date(); d.setDate(d.getDate() + (off || 0)); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+function schliesseHaltAb(){
+  const h = HALTE[z.halt], alt = fort.erledigt[h.id];
+  if(!alt || z.lauf.richtig >= alt.richtig) fort.erledigt[h.id] = {richtig:z.lauf.richtig, gesamt:z.lauf.gesamt};
+  const t = heute();
+  if(fort.letzterTag !== t){ fort.tage = fort.letzterTag === heute(-1) ? (fort.tage || 0) + 1 : 1; fort.letzterTag = t; }
+  const sek = z.startzeit ? Math.min(36000, Math.round((Date.now() - z.startzeit) / 1000)) : 0;
+  melde("halt_fertig", {h:z.halt + 1, r:z.lauf.richtig, g:z.lauf.gesamt, s:sek});
+  if(alleErledigt() && !fort.gemeldet.kurs){
+    fort.gemeldet.kurs = true;
+    melde("kurs_fertig", {r:HALTE.reduce((a,x) => a + fort.erledigt[x.id].richtig, 0), g:HALTE.reduce((a,x) => a + fort.erledigt[x.id].gesamt, 0)});
+  }
+  sichern(); z.ende = true; zeichne(true);
+}
+
+app.addEventListener("click", ev => {
+  const el = ev.target.closest("[data-akt]"); if(!el) return;
+  const akt = el.dataset.akt;
+  const h = z.halt !== null ? HALTE[z.halt] : null;
+  const st = h && !z.ende ? h.schritte[z.schritt] : null;
+  if(akt === "start"){ starteHalt(+el.dataset.halt); }
+  else if(akt === "schliessen"){ z.halt = null; z.frage = null; z.ende = false; z.ansicht = "fahrplan"; zeichne(true); }
+  else if(akt === "zaehlen"){
+    setzeZaehlung(el.dataset.wert);
+    if(z.frage !== null){ const i = z.frage; z.frage = null; starteHalt(i); } else zeichne();
+  }
+  else if(akt === "senden"){
+    if(!fort.rueck.verst || !fort.rueck.weiter){ z.kopiert = "fehlt"; zeichne(); }
+    else { melde("feedback", {verst:+fort.rueck.verst, weiter:fort.rueck.weiter, text:z.rueckText.slice(0, 400)}); z.kopiert = "gesendet"; zeichne(); }
+  }
+  else if(akt === "naechster"){ starteHalt(z.halt + 1); }
+  else if(akt === "antwort" && st && z.s.gewaehlt == null){ z.s.gewaehlt = +el.dataset.i; werte(z.s.gewaehlt === st.richtig); zeichne(); fokusWeiter(); }
+  else if(akt === "eimer" && st && !z.s.beantwortet){ z.s.gewaehlt = +el.dataset.i; z.s.beantwortet = true; werte(z.s.gewaehlt === st.karten[z.s.karte || 0].e); zeichne(); fokusWeiter(); }
+  else if(akt === "baustein" && st){ const i = +el.dataset.i; const an = z.s.an || []; z.s.an = an.includes(i) ? an.filter(x => x !== i) : an.concat(i); zeichne(); const b = app.querySelector(`.baustein[data-i="${i}"]`); if(b) b.focus(); }
+  else if(akt === "weiter" && st && kannWeiter(st)){
+    if(st.typ === "sortieren" && (z.s.karte || 0) < st.karten.length - 1){ z.s = {karte:(z.s.karte || 0) + 1}; zeichne(true); }
+    else if(z.schritt < h.schritte.length - 1){ z.schritt++; z.s = {}; zeichne(true); }
+    else schliesseHaltAb();
+  }
+  else if(akt === "rueck"){ fort.rueck[el.dataset.feld] = el.dataset.wert; z.kopiert = ""; sichern(); zeichne(); }
+  else if(akt === "kopieren"){
+    const text = el.dataset.text;
+    const fertig = ok => { z.kopiert = ok ? "ok" : "manuell"; zeichne(); };
+    try{ navigator.clipboard.writeText(text).then(() => fertig(true), () => fertig(false)); }catch(e){ fertig(false); }
+  }
+  else if(akt === "zuruecksetzen"){
+    if(!z.zurueck){ z.zurueck = true; zeichne(); }
+    else { fort = {erledigt:{}, tage:0, letzterTag:null, rueck:{}, zaehlen:fort.zaehlen, id:fort.id, q:fort.q, gemeldet:fort.gemeldet}; sichern(); z.zurueck = false; location.hash = "fahrplan"; z.ansicht = "fahrplan"; zeichne(true); }
+  }
+});
+function fokusWeiter(){ const r = app.querySelector(".rueck"); if(r && r.scrollIntoView) r.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+
+app.addEventListener("input", ev => {
+  if(ev.target.id === "rueck-text"){ z.rueckText = ev.target.value; }
+  if(ev.target.id === "token-feld"){ z.s.text = ev.target.value; const a = document.getElementById("token-aus"); if(a) a.innerHTML = tokenAusgabe(ev.target.value); }
+  if(ev.target.id === "suche"){
+    const q = ev.target.value.trim().toLowerCase(); let n = 0;
+    app.querySelectorAll("#glossar-liste li").forEach(li => { const zeig = !q || li.dataset.b.includes(q); li.hidden = !zeig; if(zeig) n++; });
+    const leer = document.getElementById("glossar-leer"); if(leer) leer.hidden = n > 0;
+  }
+});
+
+function ausHash(){ const a = location.hash.replace("#",""); return ANSICHTEN.includes(a) ? a : "fahrplan"; }
+window.addEventListener("hashchange", () => { z.ansicht = ausHash(); z.halt = null; z.frage = null; z.ende = false; z.zurueck = false; zeichne(true); });
+
+function start(d){
+  z.ansicht = ausHash();
+  if(d && typeof d.halt === "number" && HALTE[d.halt]){ z.halt = d.halt; z.schritt = Math.min(d.schritt || 0, HALTE[d.halt].schritte.length - 1); z.lauf = d.lauf || {richtig:0, gesamt:0}; }
+  zeichne();
+}
+if(window.claude && window.claude.hot && window.claude.hot.snapshot){
+  window.claude.hot.snapshot(() => ({halt:z.ende ? null : z.halt, schritt:z.schritt, lauf:z.lauf}));
+}
+if(window.claude && window.claude.hot && window.claude.hot.ready) window.claude.hot.ready(start);
+else start((window.claude && window.claude.hot && window.claude.hot.data) || {});
+</script>
+</body>
+</html>
