@@ -4,7 +4,7 @@ window.NB_TEXTE.en = {
 ui:{
   appTitel:"AI course: All Greek to me",
   titel:"Is AI all Greek to you?",
-  untertitel:"Six stops, about four minutes each. After that you know what everyone is talking about and what to watch out for.",
+  untertitel:"Six stops, about half an hour in total. After that you know what everyone is talking about and what to watch out for.",
   stand:"{n} of {m} stops done.",
   tage:"You have been on board {n} days in a row.",
   losfahren:"Set off", nochmal:"Start again at stop 1", weiterMit:"Continue with stop {n}",
@@ -36,9 +36,9 @@ ui:{
   quellenSprache:"Most sources are in German or English. Several examples refer to Germany and the EU.",
   aufbauH:"How the course is built",
   aufbauP1:"The topics follow the first four learning fields of the AI Basic Curriculum (KI-Basiscurriculum): recognising and understanding AI, using AI responsibly, judging AI-supported information search, communicating with AI.",
-  aufbauP2:"The percentages in the game “Play language model” are made-up examples. The token splitting is simplified. Both are marked where they appear.",
+  aufbauP2:"The percentages in the game “Play language model” are made-up examples. The token examples come from a real OpenAI tokenizer. The sample answer in the request builder was written by hand. Everything is marked where it appears.",
   ueberH:"About this test version",
-  ueberP1:"Texts and code were created with AI support and checked against the sources above. The translations were also made with AI. Before public use, a person should proofread everything.",
+  ueberP1:"Texts and code were created with AI support and checked against the sources above. The provider has proofread the German version. This translation was made with AI and has not yet been checked by a native speaker.",
   ueberP2:"Your progress is saved in this browser. You decide whether the test may count anonymously. More under Privacy.",
   reset:"Reset progress", resetFrage:"Really delete everything?",
   quelle:"Source", quellen:"Sources",
@@ -47,10 +47,9 @@ ui:{
   balkenAria:"How likely each word would be for a language model",
   beispielwerte:"The percentages are made-up examples, not measurements.",
   unter1:"under 1%", prozent:"{n}%",
-  tokenLabel:"Write a sentence and see roughly which pieces it breaks into.",
-  tokenLeer:"Write something in the field.",
-  tokenZahl:"{z} characters, roughly {t} tokens",
-  tokenHinweis:"Simplified splitting to try out. Real models split text differently, and each provider a little differently.",
+  tokenWahl:"Tap a sentence. Each box is a word or a punctuation mark. Dashed lines show where a word breaks into tokens.",
+  tokenZahl:"{w} words, {t} tokens",
+  tokenHinweis:"This is how an OpenAI tokenizer (o200k_base) splits these sentences. Other models split a little differently.",
   ratenNoch:"The AI still has to guess: {liste}.", ratenNichts:"Now the AI has nothing left to guess.",
   weiter:"Next", naechsteKarte:"Next card", abschliessen:"Finish stop",
   zumFahrplan:"To the timetable", haltVon:"Stop {n} of {m}", fortschrittAria:"Progress in this stop",
@@ -64,7 +63,7 @@ ui:{
   wasH:"What is counted",
   wasL:["which stops you start and finish","your score and how long you take","your answers to the questions at the end","which language you use the course in","a random ID so that your stops belong together"],
   nichtH:"What is not counted",
-  nichtL:["your name, your email address, your location","what you type into text fields in the course"],
+  nichtL:["your name, your email address, your location", "which device and browser you use"],
   einwHinweis:"The data goes into a Google spreadsheet. When sending, Google technically processes your IP address; it is not stored in the spreadsheet. The course also works without counting, and you can switch it off at any time under Privacy.",
   einwJa:"Yes, count anonymously", einwNein:"Start without counting",
   dsH:"Legal notice and privacy",
@@ -77,7 +76,7 @@ ui:{
   zaehlAus:"In this version nothing is counted and nothing is transmitted.",
   zaehlP:"The test only counts if you have agreed. The legal basis is your consent (Art. 6(1)(a) GDPR, Section 25(1) TDDDG). You can withdraw it here at any time.",
   zaehlWas:"<b>What:</b> which stops you start and finish, score, duration, language, your answers at the end, a random ID and, if present, a short code for the link you came through.",
-  zaehlNicht:"<b>What not:</b> name, email address, location, what you type into the token field. No cookies are set.",
+  zaehlNicht:"<b>What not:</b> name, email address, location, device and browser. No cookies are set.",
   zaehlWohin:"<b>Where to:</b> a Google spreadsheet of the provider (Google Ireland Limited, processing in the USA is possible). When sending, Google technically processes your IP address; it is not stored in the spreadsheet.",
   zaehlLang:"<b>How long:</b> until the end of the test phase, twelve months at most.",
   standJa:"You are counting anonymously.", standNein:"You declined counting.", standOffen:"You have not been asked yet.",
@@ -115,9 +114,14 @@ halte:[
     {h:"A language model guesses the next piece of text", html:"<p>A language model has processed a huge amount of text: books, websites, forums. In doing so it has learned which pieces of text often follow one another.</p><p>When you ask something, it calculates piece by piece how the text is likely to continue. At its core, nothing more happens. That sounds simple, but it is enough for surprisingly useful answers.</p>"},
     {h:"Play language model", frage:"Which word is most likely to come next?", satz:"For breakfast I like to drink a cup of", optionen:["coffee","tea","cocoa","concrete"], warum:"A language model calculates a ranking like this for every next piece of text. Usually it takes one of the most likely ones, but not always the very first. This built-in randomness is why you get different answers to the same question."},
     {h:"Likely is not true", frage:"How does the sentence continue correctly?", satz:"The capital of Australia is", optionen:["Sydney","Canberra","Melbourne","Vienna"], warum:"Canberra is correct. But in texts, “Sydney” appears next to “Australia” far more often. A model that only looks at frequency easily gets this wrong. Today’s chatbots usually answer this question correctly, yet the principle remains: what often appears together sounds likely to the model."},
-    {h:"Tokens: the bites AI calculates in", html:"<p>A language model does not work with whole words but with tokens. These are small pieces of text: sometimes a whole word, sometimes only part of a word or a punctuation mark.</p><p>As a rule of thumb for English text, OpenAI says: one token is about four characters or three quarters of a word. Long words, and words in many other languages, break into several tokens.</p>"},
-    {h:"Try it out", start:"Antidisestablishmentarianism is a long word."},
-    {h:"Why you should know this", html:"<p>Tokens measure how much text a model can keep in view at once. This limit is called the context window. If a conversation gets very long, early parts can get lost, and the chatbot “forgets” them.</p><p>Costs are also billed in tokens when companies use such models.</p>"},
+    {h:"Tokens: the bites AI calculates in", html:"<p>A language model does not work with letters or whole words but with tokens. These are small pieces of text: sometimes a whole word, sometimes part of a word, sometimes a punctuation mark.</p><p>Where do the pieces come from? Before training, a program counts in huge amounts of text which strings of letters occur especially often. The most frequent ones get a token of their own. That is why common words such as “house” exist in one piece. Rare words are put together from frequent fragments. These fragments are not syllables and mean nothing on their own.</p>"},
+    {h:"Look at real tokens", beispiele:[
+      {t:"The house is old.", k:["The", " house", " is", " old", "."], merke:"Short, common words are one token each. The full stop counts as one too."},
+      {t:"It is all gibberish to me.", k:["It", " is", " all", " gib", "ber", "ish", " to", " me", "."], merke:"“gibberish” is split into three pieces, the other words are not. All that matters is how often a string of letters appeared in the training texts."},
+      {t:"Antidisestablishmentarianism is a long word.", k:["Ant", "idis", "est", "ablishment", "arian", "ism", " is", " a", " long", " word", "."], merke:"A rare word does not exist in one piece. Here it is put together from six fragments. This has nothing to do with syllables."},
+      {t:"The ticket costs 1234 euros.", k:["The", " ticket", " costs", " ", "123", "4", " euros", "."], merke:"Numbers get chopped up: 1234 becomes 123 and 4. The sign ␣ stands for a space that is a token of its own here."}
+    ]},
+    {h:"Why you should know this", html:"<p>Tokens measure how much text a model can keep in view at once. This limit is called the context window. If a conversation gets very long, early parts can get lost, and the chatbot “forgets” them.</p><p>Costs are also billed in tokens when companies use such models. As a rule of thumb for English text, OpenAI says: one token is about four characters or three quarters of a word. Other languages often need more tokens for the same content.</p>"},
     {frage:"What does a language model do at its core?", optionen:["It calculates which piece of text is likely to come next","It looks the answer up in an encyclopedia","It asks a human in the background","It plays back stored answers"], warum:"Every answer is created anew, piece by piece. There is no encyclopedia in the background and there are no ready-made answers."},
     {frage:"You ask the same question twice and get two different answers. Why?", optionen:["Because of built-in randomness when choosing the next pieces of text","The chatbot has a fault","Someone else has answered the question differently in the meantime","The internet connection was bad"], warum:"The model does not always pick the most likely piece of text but, with a bit of randomness, one of the likely ones. That is intended and not a defect."}
   ]
@@ -127,7 +131,8 @@ halte:[
   mitnehmen:["A chatbot sounds just as sure with wrong answers as with right ones.","Always check sources, numbers and quotes yourself.","The more depends on an answer, the more you need a second source."],
   s:[
     {h:"Convincing does not mean correct", html:"<p>A language model is trained to write text that sounds plausible. It has no built-in check of whether the content is true.</p><p>That is why it can invent things: a quote, a year, a study that never existed. Experts call this hallucination. The tone stays just as confident as with a correct answer.</p>"},
-    {h:"How often does that happen?", html:"<p>In 2025, public broadcasters from 18 countries checked around 3,000 answers from ChatGPT, Copilot, Gemini and Perplexity to questions about the news. In 45 percent they found at least one significant problem, most often with the sources given.</p><p>The result applies to questions about current news, not to every task. If you have your own text reworded, you can judge the result yourself.</p>"},
+    {h:"How often does that happen?", html:"<p>In 2025, public broadcasters from 18 countries checked around 3,000 answers from ChatGPT, Copilot, Gemini and Perplexity to questions about the news. In 45 percent they found at least one significant problem. In 31 percent something was wrong with the sources given, in 20 percent facts were wrong or out of date.</p><p>It is still the largest study of its kind. It applies to questions about current news and to the chatbots of 2025. New models have been released since then.</p>"},
+    {h:"Are the new models better?", html:"<p>Yes, they know more and solve harder tasks. But making things up has not gone away. In 2026 Stanford University reported on a knowledge test with 26 leading models, without internet access. It counted what happens when a model does not know the right answer: depending on the model, in 22 to 94 percent of these cases it still claimed something false instead of admitting that it did not know.</p><p>A chatbot becomes much more reliable when it is allowed to look things up on the internet or when you give it the text in question. Even then it is not free of errors.</p>", merke:"Many models would rather guess than say “I don’t know”."},
     {frage:"A chatbot names a study with author and year. What do you do?", optionen:["I look up myself whether the study exists","I use it, it sounds precise","I ask the chatbot whether it is sure","I only use it if it fits my opinion"], warum:"Invented sources look deceptively like real ones. Asking the chatbot whether it is sure helps little: it can answer that convincingly and wrongly too."},
     {h:"What can you rely on?", eimer:["Well suited","Always double-check"], karten:[
       {t:"Collecting ideas for a birthday present", warum:"There is no right or wrong here. You decide yourself what fits."},
@@ -146,12 +151,12 @@ halte:[
   mitnehmen:["The AI only knows what is in your message.","Situation, goal, tone and form make almost every request better.","The first answer is a draft. Following up is part of it."],
   s:[
     {h:"The AI cannot look inside your head", html:"<p>A chatbot only knows what is in your message. Everything that is missing, it has to guess. The more it has to guess, the more general the answer becomes.</p><p>Four details almost always help:</p><ul><li><b>Situation:</b> What is it about? One or two sentences are enough.</li><li><b>Goal:</b> What should come out at the end?</li><li><b>Tone:</b> How should it sound?</li><li><b>Form:</b> How long, in what structure?</li></ul>"},
-    {h:"Build a better request", intro:"Tap the building blocks and watch a vague request turn into a clear task.", basis:"Write an email to my landlord.", bausteine:[
+    {h:"Build a better request", intro:"Tap the building blocks. Your request grows at the top; below you see the answer become more precise with every block.", basis:"Write an email to my landlord.", bausteine:[
       {name:"Situation", text:"The heating in my flat has been cold for three days."},
       {name:"Goal", text:"I want someone to come and repair it this week."},
       {name:"Tone", text:"Polite but firm."},
       {name:"Form", text:"Five sentences at most."}
-    ]},
+    ], antwort:{"titel": "This is what the answer could look like", "hinweis": "Example written by hand, not a real AI answer. Square brackets show what the AI could not know.", "betreff": ["Subject: A matter concerning my flat", "Subject: Heating cold for three days"], "anrede": "Dear Mr [name],", "auf": ["I hope you are well, and I am so sorry to bother you.", "I need your help."], "lage": ["I am writing about a matter concerning my flat: [your issue].", "The heating in my flat has been cold for three days."], "ziel": ["I would be glad if you could look into it when you have a moment.", "Please send someone to repair it this week."], "zu": ["", "Please confirm the appointment by tomorrow."], "fuell": ["I realise you are very busy. Of course I am happy to answer any questions at any time. Thank you so much in advance for your time and understanding.", ""], "dank": "Thank you.", "gruss": "Kind regards", "name": "[Your name]"}},
     {frage:"Which request brings the most useful answer?", optionen:["Give me a recipe.","Give me a vegetarian dinner for four people, ready in 30 minutes. Please as a shopping list and numbered steps.","Recipe quick please!!!","What should I cook?"], warum:"The second request names situation, goal and form. With the others, the AI has to guess almost everything."},
     {h:"Following up is part of it", html:"<p>The first answer is a draft. You may ask for improvements:</p><ul><li>“Shorter, please.”</li><li>“Explain it so that a twelve-year-old understands.”</li><li>“Give me three versions.”</li><li>“Where did you get that from? Name the source.”</li></ul><p>An example of what the result should look like often helps more than a long description.</p>"},
     {frage:"The answer is too complicated for you. What is the best next step?", optionen:["Ask for a simpler explanation in the same conversation","Switch to another chatbot at once","Ask the same question again word for word","Give up"], warum:"The chatbot has the conversation so far in view. A short addition like “simpler, please” is usually enough."}
@@ -159,17 +164,21 @@ halte:[
 },
 {
   titel:"Your data and deepfakes", kurz:"What you type in and what you believe",
-  mitnehmen:["Sensitive data does not belong in a chatbot.","Time pressure, money and secrecy together are a warning sign.","A missing AI label does not prove that something is real."],
+  mitnehmen:["The same rule of thumb applies to chatbots as to email and messengers: share only as much as needed.", "You decide yourself whether your chats are used for training.", "Time pressure, money and secrecy together are a warning sign.", "A missing AI label does not prove that something is real."],
   s:[
-    {h:"What happens to what you type", html:"<p>What you type into a chatbot is sent to the provider’s computers. Depending on the provider and the settings, your inputs may also be used to train future models.</p><p>You can object to this, but you have to do it yourself. Germany’s consumer advice centres recommend not entering personal or sensitive data.</p>"},
-    {h:"Would you type this in?", eimer:["No problem","Better not"], karten:[
+    {h:"What happens to what you type", html:"<p>What you type into a chatbot is sent to the provider’s computers and stored there. It is the same with an email, a search query or a photo in the cloud.</p><p>The language model itself does nothing with it. It does not call anyone, does not write emails and does not pass your input on to other users. It only answers when someone asks it something. It can do more only if you explicitly give it tools, such as access to your inbox.</p><p>Two things are still worth knowing: with private accounts, many providers may use your conversations to train future models unless you switch that off. And individual conversations can be reviewed by staff, for example if misuse is suspected.</p>"},
+    {h:"No more delicate than the rest of the internet", html:"<p>Many people worry more about their data with chatbots than with services they use every day. A comparison helps:</p><ul><li><b>Email:</b> Your message sits in readable form with your provider and with the recipient’s.</li><li><b>Messengers:</b> WhatsApp, Signal and Threema encrypt the content so that only the people involved can read it. With Telegram you have to switch that on first. Some providers still learn who writes to whom and when.</li><li><b>Social networks:</b> What you post is public or is analysed for advertising.</li><li><b>Chatbot:</b> The provider stores the conversation. It is not public. Be careful with shared links: anyone who has the link can read the conversation.</li></ul><p>The rule of thumb is the same everywhere: share only as much as the task needs, and think briefly about where it ends up.</p>"},
+    {frage:"You typed your first name and your mobile number into a chatbot. What happens to them?", optionen:["They are stored with the provider, much like with an email or a search query", "The AI can now call me of its own accord", "Any other user can ask the chatbot for my number", "They are now publicly on the internet"], warum:"A language model does not act on its own and does not pass input on to others. Your details sit with the provider, as with many other services. Whether that is fine for you depends on how much you trust the provider."},
+    {h:"Two steps that are worth it", html:"<ul><li><b>Switch off training.</b> In the settings, under “Privacy” or “Data controls”, you find a switch for it. In ChatGPT it is called “Improve the model for everyone”. In private ChatGPT and Claude accounts it is switched on at first, or you are asked about it.</li><li><b>Delicate things in private mode.</b> Many chatbots have a temporary chat. Such conversations do not appear in your history and are not used for training.</li></ul><p>The names of the switches change often. If you find nothing, search the settings for “training”.</p>"},
+    {h:"Would you type this in?", eimer:["No problem", "Think first"], karten:[
       {t:"What can I cook with potatoes, leeks and eggs?", warum:"There is nothing personal about that."},
-      {t:"A doctor’s letter with your name and the diagnosis", warum:"Health data is especially delicate. If you want to understand the letter, first remove name, date of birth and address."},
-      {t:"Your bank account number and your balance", warum:"Account details have no place in a chatbot."},
-      {t:"A question about the offside rule", warum:"You can ask about general knowledge without worry."},
-      {t:"The customer list from your company", warum:"That is other people’s data and often trade secrets. Many employers have their own rules for this."},
-      {t:"A cover letter for a job, without address and phone number", warum:"Without contact details that is uncritical."}
+      {t:"Your first name and your city, so that the tips fit better", warum:"You tell every online shop the same. Still, it need not be more than the task requires."},
+      {t:"A doctor’s letter with your name and the diagnosis", warum:"Health data deserves special protection. You can have the letter explained if you first remove name, date of birth and address and have switched off training."},
+      {t:"Your online banking password", warum:"Passwords, PINs and confirmation codes belong nowhere except in the bank’s login field. That applies to chatbots just as it does to emails and messengers."},
+      {t:"The customer list from your company", warum:"That is other people’s data. It is not yours to share freely. Use only tools your employer has approved for this."},
+      {t:"A cover letter that you are going to send anyway", warum:"A company you do not know will soon read the text. A chatbot is no greater risk for this."}
     ]},
+    {h:"Why companies and universities use AI even for confidential data", html:"<p>Companies, public authorities and universities also use AI models for confidential data. This works because different rules apply there than with a free private account:</p><ul><li>There is a contract that sets out what the provider may do with the data.</li><li>In the business versions of ChatGPT or Claude, input is not used for training by default.</li><li>Some run the models on their own computers or in European data centres. Universities often offer their students their own access where input is not used for training.</li></ul><p>Even there, not everything may go in. The organisation decides what is allowed. For work, training and study this means: use the access your employer or university provides, and follow their rules.</p>"},
     {h:"Deepfakes: when image and voice lie", html:"<p>AI can create or change images, videos and voices so that they seem real. Fraudsters use this, for example, for fake adverts with celebrities.</p><p>Germany’s Federal Office for Information Security names possible signs: visible seams at the edge of the face, blurred outlines, little facial expression and light that does not match the surroundings. The better the technology gets, the less often you see such flaws.</p>"},
     {h:"More important than any detail in the picture", html:"<ul><li><b>Who published it?</b> A well-known outlet or an unknown account?</li><li><b>Are others reporting it?</b> Real events show up in several reputable places.</li><li><b>Am I supposed to act fast?</b> Time pressure and demands for money are warning signs.</li></ul>"},
     {frage:"Your “grandchild” calls, the voice sounds familiar. He needs money at once, and you are not to tell anyone. What do you do?", optionen:["Hang up and call him back on the number I already know","Transfer quickly, it is his voice after all","Give my account details on the phone to compare","Wait and see whether he calls again"], warum:"Voices can be imitated with AI. Time pressure, money and secrecy together are the classic pattern of a scam. Calling back on the known number clears it up in a minute."},
@@ -185,10 +194,10 @@ halte:[
     {h:"True?", eimer:["True","Partly","Not true"], karten:[
       {t:"AI has only existed since ChatGPT.", warum:"The term has existed since 1956, and spam filters or sat navs have used AI for many years. What has been new since late 2022 is that anyone can chat with a language model."},
       {t:"Every AI request uses up a bottle of water.", warum:"For a text request, Google states 0.26 millilitres, about five drops, and OpenAI around 0.3 millilitres. These are the companies’ own figures; they have not been independently verified. Mistral counts more broadly and arrives at 45 millilitres for a longer answer. That too is far from a bottle."},
-      {t:"A text request to a chatbot needs about as much electricity as a few seconds of television.", warum:"Google states 0.24 watt-hours, which equals just under nine seconds of television. In total it still matters: all data centres together, not only those for AI, used around 415 terawatt-hours worldwide in 2024, about 1.5 percent of all electricity."},
+      {t:"A text request to a chatbot needs about as much electricity as a few seconds of television.", warum:"For a typical text request Google states 0.24 watt-hours, which equals just under nine seconds of television. Elaborate jobs where the AI carries out many steps itself need several times as much. In total it matters: all data centres together used around 485 terawatt-hours worldwide in 2025, about 1.5 percent of all electricity. About a third of that went to AI."},
       {t:"A chatbot looks its answers up in a database.", warum:"It creates every answer anew, piece by piece. Some chatbots also search the internet and summarise the hits, but that too is generated text."},
       {t:"AI is neutral because it has no prejudices.", warum:"AI learns from data, and data contains imbalances. A well-known study from 2018 tested three commercial systems that were meant to recognise gender in photos. For men with light skin the error rate was at most 0.8 percent, for women with dark skin up to 34.7 percent."},
-      {t:"What I type into a chatbot can be used for training.", warum:"Depending on the provider and the settings, that is so. You can object, but you have to do it yourself. That is why sensitive data does not belong in a chatbot."},
+      {t:"What I type into a chatbot can be used for training.", warum:"With private accounts that is often the default. You can switch it off in the settings. In the versions for companies it is usually off from the start."},
       {t:"AI is taking all our jobs away.", warum:"The World Economic Forum expects 92 million jobs to disappear and 170 million new ones to emerge worldwide by 2030, a net gain of 78 million. These are forecasts from a survey of employers, and besides technology they include trends such as climate protection. The only certain thing is that many tasks are changing."},
       {t:"Deepfakes must be labelled in the EU.", warum:"That has applied since 2 August 2026. Anyone who publishes a deceptively real AI image or AI video must disclose that it was artificially created. Fraudsters, of course, do not."}
     ]},

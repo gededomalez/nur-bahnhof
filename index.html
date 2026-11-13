@@ -103,10 +103,25 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tafel{background:var(--tafel);color:var(--tafel-schrift);padding:1.75rem 1.25rem 1.25rem;display:flex;flex-direction:column;gap:1.1rem}
 .tafel-text{font-size:1.125rem;max-width:30ch}
 .stand{display:flex;flex-direction:column;gap:.45rem}
-.strecke{display:flex;align-items:center}
+.strecke{display:flex;align-items:center;position:relative;padding-top:2.6rem}
 .strecke i{width:.95rem;height:.95rem;border-radius:50%;border:2.5px solid var(--tafel-schrift);flex:none;transition:background-color .4s}
 .strecke i.voll{background:var(--tafel-schrift)}
 .strecke b{flex:1;height:2.5px;background:var(--tafel-schrift)}
+.strecke b.stumpf{flex:0 0 3.4rem}
+.strecke u{width:2.5px;height:.8rem;background:var(--tafel-schrift);flex:none}
+.lok{position:absolute;bottom:calc(.475rem + 1px);inset-inline-start:var(--x);width:3.3rem;margin-inline-start:-1.65rem;color:var(--tafel-schrift);pointer-events:none;transition:inset-inline-start 1.8s cubic-bezier(.5,.05,.3,1)}
+.lok svg{display:block;width:100%;height:auto;overflow:visible}
+:root[dir="rtl"] .lok svg{transform:scaleX(-1)}
+.lok .fenster,.lok .nabe{fill:var(--tafel)}
+.lok .dampf{fill:currentColor;opacity:0;transform-box:fill-box;transform-origin:center}
+.lok .rad{transform-box:fill-box;transform-origin:center}
+.lok.faehrt .dampf{animation:dampf 1s ease-out infinite}
+.lok.faehrt .dampf:nth-of-type(2){animation-delay:.33s}
+.lok.faehrt .dampf:nth-of-type(3){animation-delay:.66s}
+.lok.faehrt .rad{animation:rad .6s linear infinite}
+@keyframes dampf{0%{opacity:.8;transform:translate(0,0) scale(.5)}100%{opacity:0;transform:translate(-9px,-13px) scale(1.8)}}
+@keyframes rad{to{transform:rotate(360deg)}}
+.ende-strecke{background:var(--tafel);color:var(--tafel-schrift);padding:0 1.25rem 1rem}
 .stand p{font-size:.95rem}
 .knopf{
   background:var(--gleis);color:var(--gleis-schrift);border:0;border-radius:.45rem;
@@ -165,7 +180,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   padding:.85rem .35rem;text-align:center;text-decoration:none;color:var(--tinte-leise);
   font-family:var(--display);font-weight:600;font-size:1.2rem;border-top:4px solid transparent;margin-top:-1.5px;
 }
-.nav a[aria-current="page"]{color:var(--tinte);border-top-color:var(--tafel)}
+.nav a[aria-current="page"]{color:var(--tinte);border-top-color:#FFD400}
 
 /* Lektion */
 .lektion{display:flex;flex-direction:column;flex:1;min-height:100vh}
@@ -183,7 +198,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .fuss.zwei{flex-direction:column;gap:.5rem}
 .kennung{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 
-.merke{border-inline-start:6px solid var(--tafel);background:var(--karte);padding:.8rem 1rem;border-radius:.3rem;font-weight:700}
+.merke{border-inline-start:6px solid #FFD400;background:var(--karte);padding:.8rem 1rem;border-radius:.3rem;font-weight:700}
 .quelle{font-size:.9rem;color:var(--tinte-leise)}
 .zaehler{font-size:.95rem;color:var(--tinte-leise);font-variant-numeric:tabular-nums}
 
@@ -225,14 +240,25 @@ button{font:inherit;color:inherit;cursor:pointer}
 .balken-zeile span:last-child{text-align:end}
 
 .eingabe{width:100%;font:inherit;color:var(--tinte);background:var(--karte);border:2px solid var(--linie);border-radius:.5rem;padding:.75rem .9rem;resize:vertical}
-.tokens{display:flex;flex-wrap:wrap;gap:.3rem}
-.tokens span{background:var(--karte);border:1.5px solid var(--gleis);border-radius:.3rem;padding:.1rem .4rem;font-size:1rem}
-.tokens span:nth-child(even){background:var(--tafel);color:#101C3A;border-color:#101C3A}
+.tokbsp{display:flex;flex-direction:column;gap:.5rem}
+.tokbsp .baustein{border-radius:.5rem;text-align:start;font-weight:400;padding:.6rem .9rem}
+.tokbsp .baustein[aria-pressed="true"]{font-weight:700}
+#token-aus{display:flex;flex-direction:column;gap:1rem}
+.tokens{display:flex;flex-wrap:wrap;gap:.55rem .45rem;font-size:1.2rem;background:var(--karte);border:2px solid var(--tinte);border-radius:.6rem;padding:1rem}
+.wort{display:inline-flex;border:2px solid var(--tinte);border-radius:.35rem;overflow:hidden}
+.wort span{padding:.15rem .4rem;min-width:1.1rem;text-align:center}
+.wort span + span{border-inline-start:2px dashed #101C3A}
+.wort.geteilt span{background:#FFD400;color:#101C3A}
+.wort .leer{color:var(--tinte-leise)}
+.antwort{background:var(--karte);border:1.5px solid var(--linie);border-radius:.6rem;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.6rem;font-size:1rem}
+.antwort h3{font-size:1.25rem}
+.antwort .betreff{font-weight:700}
+.antwort .platz{background:var(--halt-flaeche);border-radius:.2rem;padding:0 .2rem}
 .bausteine{display:flex;flex-wrap:wrap;gap:.5rem}
 .baustein{background:var(--karte);border:2px solid var(--linie);border-radius:2rem;padding:.5rem 1rem;min-height:2.75rem;font-weight:700}
 .baustein[aria-pressed="true"]{background:var(--gleis);color:var(--gleis-schrift);border-color:var(--gleis)}
 .prompt{background:var(--karte);border:2px solid var(--tinte);border-radius:.6rem;padding:1rem 1.1rem;font-size:1.1rem}
-.prompt mark{background:var(--tafel);color:#101C3A;padding:0 .15rem;border-radius:.15rem}
+.prompt mark{background:#FFD400;color:#101C3A;padding:0 .15rem;border-radius:.15rem}
 
 .glossar{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .glossar li{padding:.85rem 0;border-bottom:1.5px solid var(--linie);display:flex;flex-direction:column;gap:.2rem}
@@ -273,13 +299,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 /* ---------- Einstellungen: vor dem Teilen ausfüllen ---------- */
 const KONFIG = {
   messUrl: "https://script.google.com/macros/s/AKfycbxyrRUAWNNcFouqQuthr1X44a2VzrpvPBlFxKTQsqC64G0AYvOUuKA52fCpByR0ruU/exec",   // Web-App-Adresse des Google-Skripts. Leer heißt: es wird nichts gezählt.
-  version: "0.3",
-  betreiber: { name: "", anschrift: "", mail: "" }   // Angaben für Impressum und Datenschutzhinweis
+  version: "0.4",
+  betreiber: { name: "Gideon Morales", anschrift: "Hehnen 9\n88267 Vogt", mail: "gideon@soundandsun.de" }   // Angaben für Impressum und Datenschutzhinweis
 };
 
 /* ---------- Quellen ---------- */
 const Q = {
-  bitkom:{kurz:"Bitkom 2026", titel:"Bitkom-Umfrage zur KI-Nutzung in Deutschland", wer:"Bitkom / retail-news.de, 2026", url:"https://retail-news.de/bitkom-ki-umfrage-deutschland-alltag-vorbehalte/"},
+  bitkom:{kurz:"Bitkom 2026", titel:"KI macht Spaß – aber nicht allen", wer:"Bitkom, Presseinformation vom 26.05.2026", url:"https://www.bitkom.org/Presse/Presseinformation/KI-macht-Spass-aber-nicht-allen"},
   tokens:{kurz:"OpenAI Help Center", titel:"What are tokens and how to count them?", wer:"OpenAI Help Center, 2026", url:"https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"},
   ebu:{kurz:"EBU/BBC 2025", titel:"News Integrity in AI Assistants. An international PSM study", wer:"European Broadcasting Union & BBC, 10/2025", url:"https://www.ebu.ch/Report/MIS-BBC/NI_AI_2025.pdf"},
   ebuOrf:{kurz:"ORF", titel:"KI bei Nachrichten extrem fehleranfällig", wer:"ORF, 10/2025", url:"https://orf.at/stories/3409217/"},
@@ -292,6 +318,14 @@ const Q = {
   strom:{kurz:"cleanthinking.de", titel:"Google, Mistral und Epoch AI beziffern den Strom einer KI-Antwort", wer:"cleanthinking.de, 2026 (IEA)", url:"https://cleanthinking.de/sprachmodell"},
   shades:{kurz:"Gender Shades 2018", titel:"Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification", wer:"Buolamwini & Gebru, PMLR 81, 2018", url:"https://proceedings.mlr.press/v81/buolamwini18a.html"},
   wef:{kurz:"WEF 2025", titel:"Future of Jobs Report 2025", wer:"World Economic Forum, 01/2025", url:"https://www.weforum.org/press/2025/01/future-of-jobs-report-2025-78-million-new-job-opportunities-by-2030-but-urgent-upskilling-needed-to-prepare-workforces/"},
+  ebu2:{kurz:"EBU 2026", titel:"AI governance must put trust, information integrity and child safety front and centre", wer:"European Broadcasting Union, 07/2026", url:"https://www.ebu.ch/news/2026/07/ai-governance-must-put-trust-information-integrity-and-child-safety-front-and-centre-backed-by-real-accountability"},
+  stanford:{kurz:"Stanford AI Index 2026", titel:"AI Index Report 2026, Chapter 3: Responsible AI", wer:"Stanford HAI, 04/2026", url:"https://hai.stanford.edu/assets/files/ai_index_report_2026_chapter_3_responsible_ai.pdf"},
+  messenger:{kurz:"Verbraucherzentrale: Messenger", titel:"WhatsApp-Alternativen: Messenger im Überblick", wer:"Verbraucherzentrale NRW, Stand 04/2024", url:"https://www.verbraucherzentrale.de/wissen/digitale-welt/datenschutz/whatsappalternativen-die-datenschutzregeln-im-ueberblick-13055"},
+  openaiDaten:{kurz:"OpenAI Hilfe", titel:"Datenkontrollen in ChatGPT", wer:"OpenAI Help Center, 2026", url:"https://help.openai.com/de-de/articles/8983130"},
+  anthropicDaten:{kurz:"heise online", titel:"Opt-out required: Anthropic will use user data for training in future", wer:"heise online, 08/2025", url:"https://heise.de/-10625683"},
+  firmen:{kurz:"OpenAI", titel:"Schutz, Sicherheit und Compliance für Geschäftsdaten", wer:"OpenAI, 2026", url:"https://openai.com/de-DE/business-data/"},
+  uni:{kurz:"Universität Kassel", titel:"Chat AI (KI-gestützter Chatdienst)", wer:"Universität Kassel / GWDG, Stand 03/2025", url:"https://www.uni-kassel.de/its/it-dienste-software/chat-ai-ki-gestuetzter-chatdienst.html"},
+  strom2:{kurz:"Our World in Data / IEA 2026", titel:"How much energy do data centers and artificial intelligence use?", wer:"Our World in Data, 2026 (Daten: IEA, Key Questions on Energy and AI)", url:"https://ourworldindata.org/how-much-energy-do-data-centers-and-artificial-intelligence-use"},
   curriculum:{kurz:"KI-Basiscurriculum", titel:"KI-Basiscurriculum, Endbericht", wer:"Universität für Weiterbildung Krems / OeAD, 11/2025", url:"https://digitalekompetenzen.oead.at/fileadmin/Dokumente/oead.at/Bildung_Digital/Digitale_Kompetenzen/GSDK/KI_Basiscurriculum_Endbericht.pdf"}
 };
 
@@ -323,19 +357,25 @@ const HALTE = [
     {typ:"text", h:"Ein Sprachmodell rät das nächste Textstück", html:"<p>Ein Sprachmodell hat sehr viel Text verarbeitet: Bücher, Webseiten, Foren. Dabei hat es gelernt, welche Textstücke häufig aufeinander folgen.</p><p>Wenn du etwas fragst, berechnet es Stück für Stück, wie der Text wahrscheinlich weitergeht. Mehr passiert im Kern nicht. Das klingt simpel, reicht aber für erstaunlich brauchbare Antworten.</p>"},
     {typ:"vorhersage", h:"Spiel Sprachmodell", frage:"Welches Wort kommt am wahrscheinlichsten als nächstes?", satz:"Zum Frühstück trinke ich am liebsten eine Tasse", optionen:[{w:"Kaffee",p:61},{w:"Tee",p:27},{w:"Kakao",p:11},{w:"Beton",p:1}], richtig:0, warum:"So eine Rangliste berechnet ein Sprachmodell für jedes nächste Textstück. Meist nimmt es eines der wahrscheinlichsten, aber nicht immer das allererste. Dieser eingebaute Zufall sorgt dafür, dass du auf dieselbe Frage verschiedene Antworten bekommst."},
     {typ:"vorhersage", h:"Wahrscheinlich ist nicht wahr", frage:"Wie geht der Satz richtig weiter?", satz:"Die Hauptstadt von Australien heißt", optionen:[{w:"Sydney",p:47},{w:"Canberra",p:44},{w:"Melbourne",p:8},{w:"Wien",p:1}], richtig:1, warum:"Richtig ist Canberra. In Texten steht aber „Sydney“ viel öfter neben „Australien“. Ein Modell, das nur auf Häufigkeit schaut, liegt hier leicht daneben. Heutige Chatbots beantworten diese Frage meist richtig, das Prinzip bleibt trotzdem: Was oft zusammen vorkommt, klingt für das Modell wahrscheinlich."},
-    {typ:"text", h:"Tokens: die Häppchen, in denen KI rechnet", html:"<p>Ein Sprachmodell arbeitet nicht mit ganzen Wörtern, sondern mit Tokens. Das sind Textstückchen: mal ein ganzes Wort, mal nur ein Wortteil oder ein Satzzeichen.</p><p>Als Faustregel für englischen Text nennt OpenAI: Ein Token entspricht etwa vier Zeichen oder drei Vierteln eines Wortes. Lange deutsche Wörter zerfallen in mehrere Tokens.</p>", quelle:["tokens"]},
-    {typ:"tokens", h:"Probier es aus", start:"Donaudampfschifffahrt ist ein langes Wort."},
-    {typ:"text", h:"Warum du das wissen solltest", html:"<p>In Tokens wird gemessen, wie viel Text ein Modell auf einmal im Blick behalten kann. Diese Grenze heißt Kontextfenster. Wird ein Gespräch sehr lang, können frühe Teile verloren gehen, und der Chatbot „vergisst“ sie.</p><p>Auch die Kosten werden in Tokens abgerechnet, wenn Firmen solche Modelle nutzen.</p>", quelle:["tokens"]},
+    {typ:"text", h:"Tokens: die Häppchen, in denen KI rechnet", html:"<p>Ein Sprachmodell arbeitet nicht mit Buchstaben oder ganzen Wörtern, sondern mit Tokens. Das sind Textstückchen: mal ein ganzes Wort, mal ein Wortteil, mal ein Satzzeichen.</p><p>Woher kommen die Stücke? Vor dem Training zählt ein Programm in riesigen Textmengen, welche Buchstabenfolgen besonders oft vorkommen. Die häufigsten bekommen ein eigenes Token. Häufige Wörter wie „Haus“ gibt es deshalb am Stück. Seltene Wörter werden aus häufigen Bruchstücken zusammengesetzt. Diese Bruchstücke sind keine Silben und bedeuten für sich nichts.</p>", quelle:["tokens"]},
+    {typ:"tokens", h:"Sieh dir echte Tokens an", beispiele:[
+      {t:"Das Haus ist alt.", k:["Das", " Haus", " ist", " alt", "."], merke:"Kurze, häufige Wörter sind je ein Token. Auch der Punkt zählt als eines."},
+      {t:"Ich verstehe nur Bahnhof.", k:["Ich", " verste", "he", " nur", " Bahnhof", "."], merke:"„verstehe“ wird geteilt, „Bahnhof“ nicht. Entscheidend ist allein, wie oft eine Buchstabenfolge in den Lerntexten vorkam."},
+      {t:"Donaudampfschifffahrt ist ein langes Wort.", k:["D", "ona", "ud", "amp", "fsch", "if", "ff", "ahrt", " ist", " ein", " lang", "es", " Wort", "."], merke:"Ein seltenes Wort gibt es nicht am Stück. Es wird hier aus acht Bruchstücken zusammengesetzt. Mit Silben hat das nichts zu tun."},
+      {t:"Das Ticket kostet 1234 Euro.", k:["Das", " Ticket", " kostet", " ", "123", "4", " Euro", "."], merke:"Zahlen werden gestückelt: Aus 1234 wird 123 und 4. Das Zeichen ␣ steht für ein Leerzeichen, das hier ein eigenes Token ist."}
+    ]},
+    {typ:"text", h:"Warum du das wissen solltest", html:"<p>In Tokens wird gemessen, wie viel Text ein Modell auf einmal im Blick behalten kann. Diese Grenze heißt Kontextfenster. Wird ein Gespräch sehr lang, können frühe Teile verloren gehen, und der Chatbot „vergisst“ sie.</p><p>Auch die Kosten werden in Tokens abgerechnet, wenn Firmen solche Modelle nutzen. Als Faustregel nennt OpenAI für englischen Text: Ein Token entspricht etwa vier Zeichen oder drei Vierteln eines Wortes. Andere Sprachen brauchen oft mehr Tokens für denselben Inhalt.</p>", quelle:["tokens"]},
     {typ:"quiz", frage:"Was macht ein Sprachmodell im Kern?", optionen:["Es berechnet, welches Textstück wahrscheinlich als nächstes kommt","Es schlägt die Antwort in einem Lexikon nach","Es fragt im Hintergrund einen Menschen","Es spielt gespeicherte Antworten ab"], richtig:0, warum:"Jede Antwort entsteht neu, Textstück für Textstück. Es gibt kein Lexikon im Hintergrund und keine fertigen Antworten."},
     {typ:"quiz", frage:"Du stellst zweimal dieselbe Frage und bekommst zwei verschiedene Antworten. Woran liegt das?", optionen:["An einem eingebauten Zufall bei der Auswahl der nächsten Textstücke","Der Chatbot hat einen Fehler","Jemand anderes hat die Frage inzwischen anders beantwortet","Die Internetverbindung war schlecht"], richtig:0, warum:"Das Modell wählt nicht immer das wahrscheinlichste Textstück, sondern mit etwas Zufall eines der wahrscheinlichen. Das ist gewollt und kein Defekt."}
   ]
 },
 {
-  id:"h3", titel:"Warum KI sich Dinge ausdenkt", kurz:"Halluzinationen erkennen", dauer:4,
+  id:"h3", titel:"Warum KI sich Dinge ausdenkt", kurz:"Halluzinationen erkennen", dauer:5,
   mitnehmen:["Ein Chatbot klingt bei falschen Antworten genauso sicher wie bei richtigen.","Quellen, Zahlen und Zitate immer selbst nachsehen.","Je mehr von einer Antwort abhängt, desto eher brauchst du eine zweite Quelle."],
   schritte:[
     {typ:"text", h:"Überzeugend heißt nicht richtig", html:"<p>Ein Sprachmodell ist darauf trainiert, Text zu schreiben, der plausibel klingt. Eine eingebaute Prüfung, ob der Inhalt stimmt, hat es nicht.</p><p>Deshalb kann es Dinge erfinden: ein Zitat, eine Jahreszahl, eine Studie, die es nie gab. Fachleute nennen das Halluzination. Der Tonfall bleibt dabei genauso sicher wie bei einer richtigen Antwort.</p>"},
-    {typ:"text", h:"Wie oft passiert das?", html:"<p>Öffentlich-rechtliche Sender aus 18 Ländern haben 2025 rund 3.000 Antworten von ChatGPT, Copilot, Gemini und Perplexity auf Nachrichtenfragen geprüft. In 45 Prozent fanden sie mindestens einen erheblichen Mangel, am häufigsten bei den Quellenangaben.</p><p>Das Ergebnis gilt für Fragen zu aktuellen Nachrichten, nicht für jede Aufgabe. Wenn du einen eigenen Text umformulieren lässt, kannst du das Ergebnis selbst beurteilen.</p>", quelle:["ebu","ebuOrf"]},
+    {typ:"text", h:"Wie oft passiert das?", html:"<p>Öffentlich-rechtliche Sender aus 18 Ländern haben 2025 rund 3.000 Antworten von ChatGPT, Copilot, Gemini und Perplexity auf Nachrichtenfragen geprüft. In 45 Prozent fanden sie mindestens einen erheblichen Mangel. Bei 31 Prozent stimmte etwas mit den Quellenangaben nicht, bei 20 Prozent waren Fakten falsch oder veraltet.</p><p>Es ist bis heute die größte Untersuchung dieser Art. Sie gilt für Fragen zu aktuellen Nachrichten und für die Chatbots von 2025. Seitdem sind neue Modelle erschienen.</p>", quelle:["ebu", "ebu2"]},
+    {typ:"text", h:"Sind die neuen Modelle besser?", html:"<p>Ja, sie wissen mehr und lösen schwierigere Aufgaben. Das Erfinden ist aber nicht verschwunden. Die Universität Stanford berichtet 2026 von einem Wissenstest mit 26 führenden Modellen, ohne Zugriff aufs Internet. Gezählt wurde, was passiert, wenn ein Modell die richtige Antwort nicht kennt: Je nach Modell behauptete es in 22 bis 94 Prozent dieser Fälle trotzdem etwas Falsches, statt zuzugeben, dass es die Antwort nicht weiß.</p><p>Deutlich zuverlässiger wird ein Chatbot, wenn er im Internet nachschlagen darf oder wenn du ihm den Text gibst, um den es geht. Fehlerfrei ist er auch dann nicht.</p>", merke:"Viele Modelle raten lieber, als „Ich weiß es nicht“ zu sagen.", quelle:["stanford"]},
     {typ:"quiz", frage:"Ein Chatbot nennt dir eine Studie mit Autorin und Jahr. Was machst du?", optionen:["Ich suche selbst nach, ob es die Studie gibt","Ich übernehme sie, sie klingt genau","Ich frage den Chatbot, ob er sich sicher ist","Ich nutze sie nur, wenn sie zu meiner Meinung passt"], richtig:0, warum:"Erfundene Quellen sehen echten täuschend ähnlich. Den Chatbot zu fragen, ob er sich sicher ist, hilft wenig: Auch darauf kann er überzeugend falsch antworten."},
     {typ:"sortieren", h:"Worauf kannst du dich verlassen?", eimer:["Gut geeignet","Immer gegenprüfen"], karten:[
       {t:"Ideen für ein Geburtstagsgeschenk sammeln", e:0, warum:"Hier gibt es kein Richtig oder Falsch. Du entscheidest selbst, was passt."},
@@ -354,30 +394,34 @@ const HALTE = [
   mitnehmen:["Die KI weiß nur, was in deiner Nachricht steht.","Lage, Ziel, Ton und Form machen fast jede Anfrage besser.","Die erste Antwort ist ein Entwurf. Nachhaken gehört dazu."],
   schritte:[
     {typ:"text", h:"Die KI kann nicht in deinen Kopf schauen", html:"<p>Ein Chatbot weiß nur, was in deiner Nachricht steht. Alles, was fehlt, muss er raten. Je mehr er raten muss, desto allgemeiner wird die Antwort.</p><p>Vier Angaben helfen fast immer:</p><ul><li><b>Lage:</b> Worum geht es? Ein, zwei Sätze reichen.</li><li><b>Ziel:</b> Was soll am Ende herauskommen?</li><li><b>Ton:</b> Wie soll es klingen?</li><li><b>Form:</b> Wie lang, in welchem Aufbau?</li></ul>", quelle:["prompt"]},
-    {typ:"bauen", h:"Bau eine bessere Anfrage", intro:"Tippe die Bausteine an und sieh zu, wie aus einer vagen Bitte ein klarer Auftrag wird.", basis:"Schreib eine Mail an meinen Vermieter.", bausteine:[
+    {typ:"bauen", h:"Bau eine bessere Anfrage", intro:"Tippe die Bausteine an. Oben wächst deine Anfrage, unten siehst du, wie die Antwort mit jedem Baustein genauer wird.", basis:"Schreib eine Mail an meinen Vermieter.", bausteine:[
       {name:"Lage", text:"Die Heizung in meiner Wohnung ist seit drei Tagen kalt."},
       {name:"Ziel", text:"Ich möchte, dass diese Woche jemand zur Reparatur kommt."},
       {name:"Ton", text:"Höflich, aber bestimmt."},
       {name:"Form", text:"Höchstens fünf Sätze."}
-    ]},
+    ], antwort:{"titel": "So könnte die Antwort aussehen", "hinweis": "Von Hand geschriebenes Beispiel, keine echte KI-Antwort. Eckige Klammern zeigen, was die KI nicht wissen konnte.", "betreff": ["Betreff: Anliegen zu meiner Wohnung", "Betreff: Heizung seit drei Tagen kalt"], "anrede": "Sehr geehrter Herr [Name],", "auf": ["ich hoffe, es geht Ihnen gut, und entschuldige mich vielmals für die Störung.", "ich brauche Ihre Unterstützung."], "lage": ["Ich wende mich mit einem Anliegen zu meiner Wohnung an Sie: [dein Anliegen].", "In meiner Wohnung ist die Heizung seit drei Tagen kalt."], "ziel": ["Ich würde mich freuen, wenn Sie sich bei Gelegenheit darum kümmern könnten.", "Bitte schicken Sie noch diese Woche jemanden zur Reparatur."], "zu": ["", "Bitte bestätigen Sie mir den Termin bis morgen."], "fuell": ["Mir ist bewusst, dass Sie viel zu tun haben. Für Rückfragen stehe ich Ihnen selbstverständlich jederzeit gern zur Verfügung. Ich bedanke mich schon jetzt herzlich für Ihre Mühe und Ihr Verständnis.", ""], "dank": "Vielen Dank.", "gruss": "Mit freundlichen Grüßen", "name": "[Dein Name]"}},
     {typ:"quiz", frage:"Welche Anfrage bringt die brauchbarste Antwort?", optionen:["Gib mir ein Rezept.","Gib mir ein vegetarisches Abendessen für vier Personen, fertig in 30 Minuten. Bitte als Einkaufsliste und nummerierte Schritte.","Rezept schnell bitte!!!","Was soll ich kochen?"], richtig:1, warum:"Die zweite Anfrage nennt Lage, Ziel und Form. Bei den anderen muss die KI fast alles raten."},
     {typ:"text", h:"Nachhaken gehört dazu", html:"<p>Die erste Antwort ist ein Entwurf. Du darfst nachbessern lassen:</p><ul><li>„Kürzer, bitte.“</li><li>„Erklär das so, dass es ein Zwölfjähriger versteht.“</li><li>„Gib mir drei Varianten.“</li><li>„Woher hast du das? Nenn mir die Quelle.“</li></ul><p>Ein Beispiel dafür, wie das Ergebnis aussehen soll, hilft oft mehr als eine lange Beschreibung.</p>", quelle:["prompt"]},
     {typ:"quiz", frage:"Die Antwort ist dir zu kompliziert. Was ist der beste nächste Schritt?", optionen:["Im selben Gespräch um eine einfachere Erklärung bitten","Sofort den Chatbot wechseln","Dieselbe Frage wortgleich noch einmal stellen","Aufgeben"], richtig:0, warum:"Der Chatbot hat den bisherigen Verlauf im Blick. Ein kurzer Zusatz wie „einfacher, bitte“ reicht meistens."}
   ]
 },
 {
-  id:"h5", titel:"Deine Daten und Deepfakes", kurz:"Was du eingibst und was du glaubst", dauer:5,
-  mitnehmen:["Sensible Daten gehören nicht in einen Chatbot.","Zeitdruck, Geld und Geheimhaltung sind zusammen ein Warnsignal.","Ein fehlender KI-Hinweis beweist nicht, dass etwas echt ist."],
+  id:"h5", titel:"Deine Daten und Deepfakes", kurz:"Was du eingibst und was du glaubst", dauer:7,
+  mitnehmen:["Für Chatbots gilt dieselbe Faustregel wie für Mail und Messenger: nur so viel preisgeben wie nötig.", "Ob deine Chats ins Training fließen, stellst du selbst ein.", "Zeitdruck, Geld und Geheimhaltung sind zusammen ein Warnsignal.", "Ein fehlender KI-Hinweis beweist nicht, dass etwas echt ist."],
   schritte:[
-    {typ:"text", h:"Was mit deinen Eingaben passiert", html:"<p>Was du in einen Chatbot tippst, wird an die Rechner des Anbieters geschickt. Je nach Anbieter und Einstellung können deine Eingaben auch genutzt werden, um künftige Modelle zu trainieren.</p><p>Du kannst dem widersprechen, musst das aber selbst tun. Die Verbraucherzentralen empfehlen, keine persönlichen und sensiblen Daten einzugeben.</p>", quelle:["vz"]},
-    {typ:"sortieren", h:"Würdest du das eintippen?", eimer:["Kein Problem","Lieber nicht"], karten:[
+    {typ:"text", h:"Was mit deinen Eingaben passiert", html:"<p>Was du in einen Chatbot tippst, wird an die Rechner des Anbieters geschickt und dort gespeichert. Das ist wie bei einer Mail, einer Suchanfrage oder einem Foto in der Cloud.</p><p>Das Sprachmodell selbst unternimmt damit nichts. Es ruft niemanden an, schreibt keine Mails und gibt deine Eingaben nicht an andere Nutzer weiter. Es antwortet nur, wenn jemand es etwas fragt. Mehr kann es nur, wenn du ihm ausdrücklich Werkzeuge freigibst, etwa den Zugriff auf dein Postfach.</p><p>Zwei Dinge solltest du trotzdem wissen: Bei privaten Konten dürfen viele Anbieter deine Gespräche verwenden, um künftige Modelle zu trainieren, solange du das nicht ausschaltest. Und einzelne Gespräche können von Mitarbeitenden geprüft werden, etwa bei Verdacht auf Missbrauch.</p>", quelle:["vz", "openaiDaten", "anthropicDaten"]},
+    {typ:"text", h:"Nicht heikler als der Rest des Internets", html:"<p>Viele haben bei Chatbots mehr Angst um ihre Daten als bei Diensten, die sie täglich nutzen. Ein Vergleich hilft:</p><ul><li><b>E-Mail:</b> Deine Nachricht liegt lesbar bei deinem Anbieter und bei dem des Empfängers.</li><li><b>Messenger:</b> WhatsApp, Signal und Threema verschlüsseln den Inhalt so, dass nur die Beteiligten mitlesen können. Bei Telegram musst du das erst einschalten. Wer wann mit wem schreibt, erfahren manche Anbieter trotzdem.</li><li><b>Soziale Netzwerke:</b> Was du postest, ist öffentlich oder wird für Werbung ausgewertet.</li><li><b>Chatbot:</b> Der Anbieter speichert das Gespräch. Öffentlich ist es nicht. Vorsicht bei geteilten Links: Wer den Link hat, kann das Gespräch lesen.</li></ul><p>Die Faustregel ist überall dieselbe: Gib nur so viel preis, wie die Aufgabe braucht, und überleg kurz, bei wem es landet.</p>", quelle:["messenger", "vz"]},
+    {typ:"quiz", frage:"Du hast deinen Vornamen und deine Handynummer in einen Chatbot getippt. Was passiert damit?", optionen:["Sie liegen beim Anbieter gespeichert, ähnlich wie bei einer Mail oder einer Suchanfrage", "Die KI kann mich jetzt von sich aus anrufen", "Jeder andere Nutzer kann meine Nummer beim Chatbot erfragen", "Sie stehen ab sofort öffentlich im Internet"], richtig:0, warum:"Ein Sprachmodell handelt nicht von allein und gibt Eingaben nicht an andere weiter. Deine Angaben liegen beim Anbieter, so wie bei vielen anderen Diensten auch. Ob das für dich in Ordnung ist, hängt davon ab, wie sehr du dem Anbieter vertraust."},
+    {typ:"text", h:"Zwei Handgriffe, die sich lohnen", html:"<ul><li><b>Training ausschalten.</b> In den Einstellungen findest du unter „Datenschutz“ oder „Datenkontrollen“ einen Schalter dafür. Bei ChatGPT heißt er „Das Modell für alle verbessern“. In privaten Konten von ChatGPT und Claude ist er zunächst eingeschaltet, oder du wirst danach gefragt.</li><li><b>Heikles im privaten Modus.</b> Viele Chatbots haben einen temporären Chat. Solche Gespräche tauchen nicht im Verlauf auf und werden nicht fürs Training genutzt.</li></ul><p>Die Namen der Schalter ändern sich öfter. Wenn du nichts findest, such in den Einstellungen nach „Training“.</p>", quelle:["openaiDaten", "anthropicDaten"]},
+    {typ:"sortieren", h:"Würdest du das eintippen?", eimer:["Kein Problem", "Erst nachdenken"], karten:[
       {t:"Was koche ich aus Kartoffeln, Lauch und Eiern?", e:0, warum:"Daran ist nichts Persönliches."},
-      {t:"Ein Arztbrief mit deinem Namen und der Diagnose", e:1, warum:"Gesundheitsdaten sind besonders heikel. Wenn du den Brief verstehen willst, entferne vorher Name, Geburtsdatum und Adresse."},
-      {t:"Deine IBAN und dein Kontostand", e:1, warum:"Kontodaten haben in einem Chatbot nichts verloren."},
-      {t:"Eine Frage zur Abseitsregel", e:0, warum:"Allgemeines Wissen kannst du bedenkenlos fragen."},
-      {t:"Die Kundenliste aus deiner Firma", e:1, warum:"Das sind Daten anderer Menschen und oft Geschäftsgeheimnisse. Viele Arbeitgeber haben dafür eigene Regeln."},
-      {t:"Ein Bewerbungsanschreiben ohne Adresse und Telefonnummer", e:0, warum:"Ohne Kontaktdaten ist das unkritisch."}
+      {t:"Dein Vorname und deine Stadt, damit die Tipps besser passen", e:0, warum:"Das verrätst du auch jedem Online-Shop. Mehr als die Aufgabe braucht, muss es trotzdem nicht sein."},
+      {t:"Ein Arztbrief mit deinem Namen und der Diagnose", e:1, warum:"Gesundheitsdaten sind besonders schützenswert. Du kannst dir den Brief erklären lassen, wenn du vorher Name, Geburtsdatum und Adresse entfernst und das Training ausgeschaltet hast."},
+      {t:"Dein Passwort fürs Online-Banking", e:1, warum:"Passwörter, PINs und TANs gehören nirgendwohin außer in das Anmeldefeld der Bank. Das gilt für Chatbots genauso wie für Mails und Messenger."},
+      {t:"Die Kundenliste aus deiner Firma", e:1, warum:"Das sind Daten anderer Menschen. Über sie darfst du nicht frei verfügen. Nutze dafür nur Werkzeuge, die dein Arbeitgeber freigegeben hat."},
+      {t:"Ein Bewerbungsanschreiben, das du ohnehin verschicken willst", e:0, warum:"Den Text bekommt bald eine fremde Firma zu lesen. Ein Chatbot ist dafür kein größeres Risiko."}
     ]},
+    {typ:"text", h:"Warum Firmen und Unis KI auch für vertrauliche Daten nutzen", html:"<p>Unternehmen, Behörden und Hochschulen setzen KI-Modelle auch für vertrauliche Daten ein. Das geht, weil dort andere Regeln gelten als beim privaten Gratis-Konto:</p><ul><li>Es gibt einen Vertrag, der festlegt, was der Anbieter mit den Daten tun darf.</li><li>In den Firmenversionen von ChatGPT oder Claude werden Eingaben standardmäßig nicht fürs Training genutzt.</li><li>Manche betreiben die Modelle auf eigenen Rechnern oder in europäischen Rechenzentren. Hochschulen bieten ihren Studierenden oft einen eigenen Zugang, bei dem Eingaben nicht fürs Training verwendet werden.</li></ul><p>Auch dort darf nicht alles hinein. Was erlaubt ist, legt die Organisation fest. Für Arbeit, Ausbildung und Studium heißt das: Nimm den Zugang, den dein Arbeitgeber oder deine Hochschule bereitstellt, und halte dich an deren Regeln.</p>", quelle:["firmen", "uni"]},
     {typ:"text", h:"Deepfakes: wenn Bild und Stimme lügen", html:"<p>Mit KI lassen sich Bilder, Videos und Stimmen erzeugen oder verändern, die echt wirken. Betrüger nutzen das etwa für gefälschte Werbung mit Prominenten.</p><p>Das Bundesamt für Sicherheit in der Informationstechnik nennt als mögliche Hinweise: sichtbare Übergänge am Rand des Gesichts, verwaschene Konturen, wenig Mimik und Licht, das nicht zur Umgebung passt. Je besser die Technik wird, desto seltener sieht man solche Fehler.</p>", quelle:["bsi"]},
     {typ:"text", h:"Wichtiger als jedes Bilddetail", html:"<ul><li><b>Wer hat es veröffentlicht?</b> Ein bekanntes Medium oder ein unbekanntes Konto?</li><li><b>Berichten andere darüber?</b> Echte Ereignisse tauchen an mehreren seriösen Stellen auf.</li><li><b>Soll ich schnell handeln?</b> Zeitdruck und Geldforderungen sind Warnzeichen.</li></ul>"},
     {typ:"quiz", frage:"Dein „Enkel“ ruft an, die Stimme klingt vertraut. Er braucht sofort Geld, und du sollst niemandem etwas sagen. Was tust du?", optionen:["Auflegen und ihn unter der Nummer zurückrufen, die ich schon kenne","Schnell überweisen, es ist ja seine Stimme","Am Telefon meine Kontodaten zum Abgleich nennen","Abwarten, ob er noch einmal anruft"], richtig:0, warum:"Stimmen lassen sich mit KI nachahmen. Zeitdruck, Geld und Geheimhaltung zusammen sind das klassische Muster eines Betrugs. Ein Rückruf über die bekannte Nummer klärt es in einer Minute."},
@@ -393,10 +437,10 @@ const HALTE = [
     {typ:"sortieren", h:"Stimmt das?", eimer:["Stimmt","Teils","Stimmt nicht"], karten:[
       {t:"KI gibt es erst seit ChatGPT.", e:2, warum:"Den Begriff gibt es seit 1956, und Spamfilter oder Navis nutzen KI seit vielen Jahren. Neu ist seit Ende 2022, dass jeder mit einem Sprachmodell chatten kann."},
       {t:"Jede KI-Anfrage verbraucht eine Flasche Wasser.", e:2, warum:"Für eine Textanfrage nennt Google 0,26 Milliliter, also etwa fünf Tropfen, OpenAI rund 0,3 Milliliter. Das sind eigene Angaben der Firmen, unabhängig geprüft sind sie nicht. Mistral rechnet breiter und kommt auf 45 Milliliter für eine längere Antwort. Auch das ist weit von einer Flasche entfernt.", quelle:["wasser","wasser2","strom"]},
-      {t:"Eine Textanfrage an einen Chatbot braucht etwa so viel Strom wie ein paar Sekunden Fernsehen.", e:0, warum:"Google nennt 0,24 Wattstunden, das entspricht knapp neun Sekunden Fernsehen. In der Summe zählt es trotzdem: Alle Rechenzentren zusammen, nicht nur die für KI, verbrauchten 2024 weltweit rund 415 Terawattstunden, etwa 1,5 Prozent des gesamten Stroms.", quelle:["wasser","strom"]},
+      {t:"Eine Textanfrage an einen Chatbot braucht etwa so viel Strom wie ein paar Sekunden Fernsehen.", e:0, warum:"Google nennt für eine typische Textanfrage 0,24 Wattstunden, das entspricht knapp neun Sekunden Fernsehen. Aufwendige Aufträge, bei denen die KI viele Schritte selbst ausführt, brauchen ein Mehrfaches. In der Summe zählt es: Alle Rechenzentren zusammen verbrauchten 2025 weltweit rund 485 Terawattstunden, etwa 1,5 Prozent des gesamten Stroms. Etwa ein Drittel davon entfiel auf KI.", quelle:["wasser", "strom2"]},
       {t:"Ein Chatbot schlägt seine Antworten in einer Datenbank nach.", e:2, warum:"Er erzeugt jede Antwort neu, Textstück für Textstück. Manche Chatbots suchen zusätzlich im Internet und fassen die Treffer zusammen, aber auch das ist erzeugter Text."},
       {t:"KI ist neutral, weil sie keine Vorurteile hat.", e:2, warum:"KI lernt aus Daten, und Daten enthalten Schieflagen. Eine bekannte Studie von 2018 prüfte drei kommerzielle Systeme, die auf Fotos das Geschlecht erkennen sollten. Bei Männern mit heller Haut lag die Fehlerquote bei höchstens 0,8 Prozent, bei Frauen mit dunkler Haut bei bis zu 34,7 Prozent.", quelle:["shades"]},
-      {t:"Was ich in einen Chatbot tippe, kann zum Training verwendet werden.", e:0, warum:"Je nach Anbieter und Einstellung ist das so. Du kannst widersprechen, musst es aber selbst tun. Deshalb gehören sensible Daten nicht in einen Chatbot.", quelle:["vz"]},
+      {t:"Was ich in einen Chatbot tippe, kann zum Training verwendet werden.", e:0, warum:"Bei privaten Konten ist das oft voreingestellt. Du kannst es in den Einstellungen ausschalten. In den Versionen für Firmen ist es meist von vornherein aus.", quelle:["openaiDaten", "anthropicDaten"]},
       {t:"KI nimmt uns allen die Arbeit weg.", e:1, warum:"Das Weltwirtschaftsforum erwartet bis 2030 weltweit 92 Millionen wegfallende und 170 Millionen neue Stellen, unter dem Strich ein Plus von 78 Millionen. Das sind Prognosen aus einer Arbeitgeber-Befragung, und sie umfassen neben Technik auch Trends wie den Klimaschutz. Sicher ist nur, dass sich viele Tätigkeiten verändern.", quelle:["wef"]},
       {t:"Deepfakes müssen in der EU gekennzeichnet werden.", e:0, warum:"Seit dem 2. August 2026 gilt das. Wer ein täuschend echtes KI-Bild oder KI-Video veröffentlicht, muss offenlegen, dass es künstlich erzeugt ist. Betrüger tun das natürlich nicht.", quelle:["art50"]}
     ]},
@@ -428,7 +472,7 @@ const GLOSSAR = [
 const UI_DE = {
   appTitel:"KI-Kurs Nur Bahnhof",
   titel:"Bei KI nur Bahnhof?",
-  untertitel:"Sechs Halte, je rund vier Minuten. Danach weißt du, wovon alle reden und worauf du achten musst.",
+  untertitel:"Sechs Halte, zusammen rund eine halbe Stunde. Danach weißt du, wovon alle reden und worauf du achten musst.",
   stand:"{n} von {m} Halten geschafft.",
   tage:"Du bist {n} Tage in Folge dabei.",
   losfahren:"Losfahren", nochmal:"Noch einmal ab Halt 1", weiterMit:"Weiter mit Halt {n}",
@@ -460,9 +504,9 @@ const UI_DE = {
   quellenSprache:"",
   aufbauH:"Wie der Kurs aufgebaut ist",
   aufbauP1:"Die Themen folgen den ersten vier Lernfeldern des KI-Basiscurriculums: KI erkennen und verstehen, verantwortungsvoll mit KI umgehen, KI-gestützte Informationssuche bewerten, mit KI kommunizieren.",
-  aufbauP2:"Die Prozentwerte im Spiel „Spiel Sprachmodell“ sind ausgedachte Beispiele. Die Token-Zerlegung ist vereinfacht. Beides ist an Ort und Stelle gekennzeichnet.",
+  aufbauP2:"Die Prozentwerte im Spiel „Spiel Sprachmodell“ sind ausgedachte Beispiele. Die Token-Beispiele stammen aus einem echten Tokenizer von OpenAI. Die Beispielantwort im Anfrage-Baukasten ist von Hand geschrieben. Alles ist an Ort und Stelle gekennzeichnet.",
   ueberH:"Über diese Testfassung",
-  ueberP1:"Texte und Code wurden mit KI-Unterstützung erstellt und mit den oben genannten Quellen abgeglichen. Vor einem öffentlichen Einsatz sollte ein Mensch alle Inhalte gegenlesen.",
+  ueberP1:"Texte und Code wurden mit KI-Unterstützung erstellt und mit den oben genannten Quellen abgeglichen. Die deutsche Fassung hat der Anbieter gegengelesen.",
   ueberP2:"Dein Fortschritt wird in diesem Browser gespeichert. Ob der Test anonym mitzählen darf, entscheidest du selbst. Mehr dazu steht unter Datenschutz.",
   reset:"Fortschritt zurücksetzen", resetFrage:"Wirklich alles löschen?",
   quelle:"Quelle", quellen:"Quellen",
@@ -471,10 +515,9 @@ const UI_DE = {
   balkenAria:"So wahrscheinlich wären die Wörter für ein Sprachmodell",
   beispielwerte:"Die Prozentwerte sind ausgedachte Beispiele, keine Messung.",
   unter1:"unter 1 %", prozent:"{n} %",
-  tokenLabel:"Schreib einen Satz und sieh, in welche Stücke er ungefähr zerfällt.",
-  tokenLeer:"Schreib etwas in das Feld.",
-  tokenZahl:"{z} Zeichen, ungefähr {t} Tokens",
-  tokenHinweis:"Vereinfachte Zerlegung zum Ausprobieren. Echte Modelle teilen Text anders, und jeder Anbieter ein wenig verschieden.",
+  tokenWahl:"Tippe einen Satz an. Jeder Kasten ist ein Wort oder ein Satzzeichen. Gestrichelte Linien zeigen, wo ein Wort in Tokens zerfällt.",
+  tokenZahl:"{w} Wörter, {t} Tokens",
+  tokenHinweis:"So zerlegt ein Tokenizer von OpenAI (o200k_base) diese Sätze. Andere Modelle teilen etwas anders.",
   ratenNoch:"Die KI muss noch raten: {liste}.", ratenNichts:"Jetzt muss die KI nichts mehr raten.",
   weiter:"Weiter", naechsteKarte:"Nächste Karte", abschliessen:"Halt abschließen",
   zumFahrplan:"Zum Fahrplan", haltVon:"Halt {n} von {m}", fortschrittAria:"Fortschritt in diesem Halt",
@@ -488,7 +531,7 @@ const UI_DE = {
   wasH:"Was gezählt wird",
   wasL:["welche Halte du startest und schaffst","deine Punktzahl und wie lange du brauchst","deine Antworten auf die Fragen am Ende","in welcher Sprache du den Kurs nutzt","eine zufällige Kennung, damit deine Halte zusammengehören"],
   nichtH:"Was nicht gezählt wird",
-  nichtL:["dein Name, deine E-Mail-Adresse, dein Standort","was du in Textfelder im Kurs tippst"],
+  nichtL:["dein Name, deine E-Mail-Adresse, dein Standort", "welches Gerät und welchen Browser du nutzt"],
   einwHinweis:"Die Daten landen in einer Google-Tabelle. Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht. Der Kurs funktioniert auch ohne Zählung, und du kannst sie jederzeit unter Datenschutz ausschalten.",
   einwJa:"Ja, anonym mitzählen", einwNein:"Ohne Zählung starten",
   dsH:"Impressum und Datenschutz",
@@ -501,7 +544,7 @@ const UI_DE = {
   zaehlAus:"In dieser Fassung wird nichts gezählt und nichts übertragen.",
   zaehlP:"Der Test zählt nur mit, wenn du zugestimmt hast. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 Buchst. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit hier widerrufen.",
   zaehlWas:"<b>Was:</b> welche Halte du startest und schaffst, Punktzahl, Dauer, Sprache, deine Antworten am Ende, eine zufällige Kennung und gegebenenfalls ein Kürzel dafür, über welchen Link du gekommen bist.",
-  zaehlNicht:"<b>Was nicht:</b> Name, E-Mail-Adresse, Standort, Eingaben im Token-Feld. Es werden keine Cookies gesetzt.",
+  zaehlNicht:"<b>Was nicht:</b> Name, E-Mail-Adresse, Standort, Gerät und Browser. Es werden keine Cookies gesetzt.",
   zaehlWohin:"<b>Wohin:</b> in eine Google-Tabelle des Anbieters (Google Ireland Limited, Verarbeitung auch in den USA möglich). Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht.",
   zaehlLang:"<b>Wie lange:</b> bis zum Ende der Testphase, längstens zwölf Monate.",
   standJa:"Du zählst anonym mit.", standNein:"Du hast die Zählung abgelehnt.", standOffen:"Du wurdest noch nicht gefragt.",
@@ -602,8 +645,24 @@ function quelleHTML(keys){
 function rueckHTML(ok, text, keys, kopf){
   return `<div class="rueck ${ok ? "gut" : "schlecht"}" role="status"><p class="rueck-kopf"><span class="lampe"></span>${kopf || (ok ? t("richtig") : t("falsch"))}</p><p>${text}</p>${quelleHTML(keys)}</div>`;
 }
-function streckeHTML(){
-  return `<div class="strecke" aria-hidden="true">` + HALTE.map((h,i) => `${i ? "<b></b>" : ""}<i class="${fort.erledigt[h.id] ? "voll" : ""}"></i>`).join("") + `</div>`;
+const LOK_SVG = `<svg viewBox="0 0 46 29" aria-hidden="true" focusable="false"><circle class="dampf" cx="32.5" cy="1" r="2.6"/><circle class="dampf" cx="32.5" cy="1" r="2.6"/><circle class="dampf" cx="32.5" cy="1" r="2.6"/><g fill="currentColor"><rect x="2" y="4" width="17" height="3" rx="1"/><rect x="4" y="6" width="13" height="15" rx="1.5"/><rect x="17" y="11" width="21" height="10" rx="3"/><rect x="29.5" y="2.5" width="6" height="2.5" rx="1"/><rect x="30.5" y="4" width="4" height="8"/><rect x="22" y="8" width="5" height="4" rx="2"/><rect x="3" y="20" width="37" height="3"/><path d="M40 17l5 6h-5z"/></g><rect class="fenster" x="7" y="9" width="7" height="6" rx="1"/><g class="rad"><circle cx="10" cy="24" r="5" fill="currentColor"/><circle class="nabe" cx="10" cy="24" r="1.6"/><rect class="nabe" x="9.4" y="19.6" width="1.2" height="3"/></g><g class="rad"><circle cx="23" cy="25" r="4" fill="currentColor"/><circle class="nabe" cx="23" cy="25" r="1.3"/><rect class="nabe" x="22.5" y="21.5" width="1" height="2.4"/></g><g class="rad"><circle cx="33" cy="25" r="4" fill="currentColor"/><circle class="nabe" cx="33" cy="25" r="1.3"/><rect class="nabe" x="32.5" y="21.5" width="1" height="2.4"/></g></svg>`;
+/* Die Lok steht am weitesten geschafften Halt, ohne geschafften Halt am Prellbock. */
+function lokIdx(){ let m = -1; HALTE.forEach((h,i) => { if(fort.erledigt[h.id]) m = i; }); return m; }
+function lokX(i){ return i < 0 ? "1.65rem" : `calc(3.875rem + 2.5px + ${(i / (HALTE.length - 1)).toFixed(4)} * (100% - 4.35rem - 2.5px))`; }
+function streckeHTML(fahrt){
+  const ziel = lokIdx(), von = fahrt ? fahrt.von : ziel, frisch = fahrt ? fahrt.frisch : null;
+  return `<div class="strecke" aria-hidden="true"${fahrt ? ` data-fahrt data-von="${von}" data-ziel="${ziel}"` : ""}><u></u><b class="stumpf"></b>` + HALTE.map((h,i) => `${i ? "<b></b>" : ""}<i class="${fort.erledigt[h.id] && i !== frisch ? "voll" : ""}"${i === frisch ? " data-frisch" : ""}></i>`).join("") + `<span class="lok" style="--x:${lokX(von)}">${LOK_SVG}</span></div>`;
+}
+/* Lässt die Lok nach einem abgeschlossenen Halt zum neuen Stand fahren. */
+function fahreLok(){
+  const s = app.querySelector(".strecke[data-fahrt]"); if(!s) return;
+  const lok = s.querySelector(".lok"), ziel = +s.dataset.ziel, frisch = s.querySelector("[data-frisch]");
+  const an = () => { lok.classList.remove("faehrt"); if(frisch) frisch.classList.add("voll"); };
+  const ruhig = window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches;
+  if(ruhig || +s.dataset.von === ziel){ lok.style.setProperty("--x", lokX(ziel)); an(); return; }
+  let fertig = false; const ende = () => { if(!fertig){ fertig = true; an(); } };
+  requestAnimationFrame(() => requestAnimationFrame(() => { lok.classList.add("faehrt"); lok.style.setProperty("--x", lokX(ziel)); }));
+  lok.addEventListener("transitionend", ende, {once:true}); setTimeout(ende, 2600);
 }
 function sprachenHTML(){
   return `<div class="sprachen" role="group" aria-label="${esc(t("sprache"))}">` + Object.keys(SPRACHEN).filter(hatSprache).map(l => `<button data-akt="sprache" data-l="${l}" lang="${l}" aria-pressed="${z.l === l}">${SPRACHEN[l]}</button>`).join("") + `</div>`;
@@ -690,7 +749,7 @@ function glossarHTML(){
 }
 
 function quellenHTML(){
-  const reihenfolge = ["bitkom","tokens","ebu","ebuOrf","vz","prompt","bsi","art50","wasser","wasser2","strom","shades","wef","curriculum"];
+  const reihenfolge = ["bitkom","tokens","ebu","ebu2","ebuOrf","stanford","vz","prompt","messenger","openaiDaten","anthropicDaten","firmen","uni","bsi","art50","wasser","wasser2","strom","strom2","shades","wef","curriculum"];
   const hinweis = t("quellenSprache");
   return `
   <div class="seite">
@@ -757,30 +816,35 @@ function navHTML(){
 }
 
 /* ---------- Lektion ---------- */
-const BUCHSTABEN = "A-Za-z\\u00C0-\\u024F\\u0600-\\u06FF";
-const RE_TEILE = new RegExp("[" + BUCHSTABEN + "]+|\\d+|[^\\s" + BUCHSTABEN + "\\d]", "g");
-const RE_WORT = new RegExp("^[" + BUCHSTABEN + "]+$");
-function zerlege(text){
-  const teile = text.match(RE_TEILE) || [];
-  const out = [];
-  for(const x of teile){
-    if(RE_WORT.test(x) && x.length > 6){
-      let i = 0;
-      while(i < x.length){
-        let n = 4;
-        const rest = x.length - i - 4;
-        if(rest > 0 && rest < 3) n = x.length - i;
-        out.push(x.slice(i, i + n));
-        i += n;
-      }
-    } else out.push(x);
+/* Tokens zu Wörtern gruppieren: Ein Token mit führendem Leerzeichen beginnt ein neues Wort. */
+const AR_OHNE_ANSCHLUSS = "اأإآدذرزوؤءةى";
+const istAr = c => c >= "\u0620" && c <= "\u064A";
+function tokenGruppen(k){
+  const g = [];
+  k.forEach(tok => {
+    if(tok === " "){ g.push({leer:true, teile:["␣"]}); g.push({teile:[]}); return; }
+    if(/^[.,!?;:،؟]+$/.test(tok)){ g.push({teile:[tok]}); g.push({teile:[]}); return; }
+    if(tok[0] === " " || !g.length){ g.push({teile:[tok.replace(/^ /, "")]}); return; }
+    g[g.length - 1].teile.push(tok);
+  });
+  return g.filter(x => x.teile.length);
+}
+/* Arabische Buchstaben bleiben über die Trennlinie hinweg verbunden. */
+function arVerbinden(teile){
+  const out = teile.slice();
+  for(let i = 0; i < out.length - 1; i++){
+    const x = out[i].slice(-1), y = out[i + 1][0];
+    if(istAr(x) && istAr(y) && !AR_OHNE_ANSCHLUSS.includes(x) && y !== "ء"){ out[i] += "\u200D"; out[i + 1] = "\u200D" + out[i + 1]; }
   }
   return out;
 }
-function tokenAusgabe(text){
-  const x = zerlege(text);
-  const chips = x.map(c => `<span>${esc(c)}</span>`).join("");
-  return `<div class="tokens">${chips || `<span class="leise">${esc(t("tokenLeer"))}</span>`}</div><p class="zaehler">${esc(t("tokenZahl", {z:text.length, t:x.length}))}</p>`;
+function tokenAusgabe(b){
+  const gruppen = tokenGruppen(b.k).map(g => {
+    const zahl = g.teile.length > 1 && /^[\d.,:%]+$/.test(g.teile.join(""));
+    return `<span class="wort ${g.teile.length > 1 ? "geteilt" : ""}"${zahl ? ' dir="ltr"' : ""}>${arVerbinden(g.teile).map(x => `<span${g.leer ? ' class="leer"' : ""}>${esc(x)}</span>`).join("")}</span>`;
+  }).join("");
+  const w = b.t.trim().split(/\s+/).length;
+  return `<div class="tokens">${gruppen}</div><p class="zaehler">${esc(t("tokenZahl", {w:w, t:b.k.length}))}</p><p class="merke">${esc(b.merke)}</p>`;
 }
 
 function schrittHTML(st){
@@ -821,10 +885,10 @@ function schrittHTML(st){
     return `<h2>${esc(st.h)}</h2><p>${esc(st.frage)}</p><p class="satz">${esc(st.satz)} <span class="luecke">${fertig ? esc(st.optionen[st.richtig].w) : "…"}</span></p><div class="optionen">${opts}</div>${fertig ? rueckHTML(s.gewaehlt === st.richtig, esc(st.warum)) + balken : ""}`;
   }
   if(st.typ === "tokens"){
-    const text = s.text != null ? s.text : st.start;
-    return `<h2>${esc(st.h)}</h2><label for="token-feld">${esc(t("tokenLabel"))}</label>
-      <textarea class="eingabe" id="token-feld" rows="2" maxlength="160" dir="auto">${esc(text)}</textarea>
-      <div id="token-aus" aria-live="polite">${tokenAusgabe(text)}</div>
+    const n = s.bsp || 0;
+    const wahl = st.beispiele.map((b,i) => `<button class="baustein" data-akt="tokbsp" data-i="${i}" aria-pressed="${i === n}">${esc(b.t)}</button>`).join("");
+    return `<h2>${esc(st.h)}</h2><p>${esc(t("tokenWahl"))}</p><div class="tokbsp">${wahl}</div>
+      <div id="token-aus" aria-live="polite">${tokenAusgabe(st.beispiele[n])}</div>
       <p class="quelle">${esc(t("tokenHinweis"))}</p>`;
   }
   if(st.typ === "bauen"){
@@ -833,7 +897,14 @@ function schrittHTML(st){
     const zusatz = st.bausteine.map((b,i) => an.includes(i) ? ` <mark>${esc(b.text)}</mark>` : "").join("");
     const offen = st.bausteine.filter((b,i) => !an.includes(i)).map(b => b.name);
     const stand = offen.length ? t("ratenNoch", {liste:offen.join(z.l === "ar" ? "، " : ", ")}) : t("ratenNichts");
-    return `<h2>${esc(st.h)}</h2><p>${esc(st.intro)}</p><div class="bausteine">${chips}</div><p class="prompt">${esc(st.basis)}${zusatz}</p><p class="${offen.length ? "zaehler" : "merke"}" role="status">${esc(stand)}</p>`;
+    const A = st.antwort, ein = i => an.includes(i) ? 1 : 0;
+    const kl = x => esc(x).replace(/\[[^\]]+\]/g, m => `<span class="platz">${m}</span>`);
+    const brief = A ? `<section class="antwort" aria-live="polite"><h3>${esc(A.titel)}</h3>
+      <p class="betreff">${kl(A.betreff[ein(0)])}</p><p>${kl(A.anrede)}</p>
+      <p>${kl([A.auf[ein(2)], A.lage[ein(0)], A.ziel[ein(1)], A.zu[ein(2)]].filter(Boolean).join(" "))}</p>
+      ${A.fuell[ein(3)] ? `<p>${kl(A.fuell[ein(3)])}</p>` : ""}<p>${kl(A.dank)}</p><p>${kl(A.gruss)}<br>${kl(A.name)}</p>
+      <p class="quelle">${esc(A.hinweis)}</p></section>` : "";
+    return `<h2>${esc(st.h)}</h2><p>${esc(st.intro)}</p><div class="bausteine">${chips}</div><p class="prompt">${esc(st.basis)}${zusatz}</p><p class="${offen.length ? "zaehler" : "merke"}" role="status">${esc(stand)}</p>${brief}`;
   }
   return "";
 }
@@ -869,6 +940,7 @@ function endeHTML(h){
   <div class="lektion">
     <div class="kopf"><button data-akt="schliessen">${esc(t("zumFahrplan"))}</button><span>${esc(t("haltVon", {n:z.halt + 1, m:HALTE.length}))}</span></div>
     <div class="schritte">${h.schritte.map(() => `<i class="war"></i>`).join("")}</div>
+    <div class="ende-strecke">${streckeHTML(z.lok || undefined)}</div>
     <main class="blatt">
       <h2>${esc(t("haltGeschafft", {n:z.halt + 1}))}</h2>
       ${z.lauf.gesamt ? `<p>${esc(t("ergebnis", {r:z.lauf.richtig, g:z.lauf.gesamt}))}${e && e.richtig > z.lauf.richtig ? " " + esc(t("bestes", {r:e.richtig})) : ""}</p>` : ""}
@@ -884,6 +956,7 @@ function zeichne(oben){
   else if(z.halt !== null) app.innerHTML = lektionHTML();
   else app.innerHTML = (z.ansicht === "glossar" ? glossarHTML() : z.ansicht === "quellen" ? quellenHTML() : z.ansicht === "datenschutz" ? datenschutzHTML() : fahrplanHTML()) + navHTML();
   if(oben) window.scrollTo(0, 0);
+  fahreLok(); z.lok = null;
 }
 function starteHalt(i){
   if(messBereit() && fort.zaehlen == null){ z.frage = i; zeichne(true); return; }
@@ -903,7 +976,7 @@ function setzeZaehlung(wert){
 function werte(ok){ z.lauf.gesamt++; if(ok) z.lauf.richtig++; }
 function heute(off){ const d = new Date(); d.setDate(d.getDate() + (off || 0)); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
 function schliesseHaltAb(){
-  const h = HALTE[z.halt], alt = fort.erledigt[h.id];
+  const h = HALTE[z.halt], alt = fort.erledigt[h.id], lokVor = lokIdx();
   if(!alt || z.lauf.richtig >= alt.richtig) fort.erledigt[h.id] = {richtig:z.lauf.richtig, gesamt:z.lauf.gesamt};
   const tag = heute();
   if(fort.letzterTag !== tag){ fort.tage = fort.letzterTag === heute(-1) ? (fort.tage || 0) + 1 : 1; fort.letzterTag = tag; }
@@ -913,6 +986,7 @@ function schliesseHaltAb(){
     fort.gemeldet.kurs = true;
     melde("kurs_fertig", {r:HALTE.reduce((a,x) => a + fort.erledigt[x.id].richtig, 0), g:HALTE.reduce((a,x) => a + fort.erledigt[x.id].gesamt, 0)});
   }
+  z.lok = {von:lokVor, frisch:alt ? null : z.halt};
   sichern(); z.ende = true; zeichne(true);
 }
 
@@ -936,6 +1010,7 @@ app.addEventListener("click", ev => {
   else if(akt === "naechster"){ starteHalt(z.halt + 1); }
   else if(akt === "antwort" && st && z.s.gewaehlt == null){ z.s.gewaehlt = +el.dataset.i; werte(z.s.gewaehlt === st.richtig); zeichne(); zeigeRueck(); }
   else if(akt === "eimer" && st && !z.s.beantwortet){ z.s.gewaehlt = +el.dataset.i; z.s.beantwortet = true; werte(z.s.gewaehlt === st.karten[z.s.karte || 0].e); zeichne(); zeigeRueck(); }
+  else if(akt === "tokbsp" && st){ z.s.bsp = +el.dataset.i; zeichne(); const b = app.querySelector(`.tokbsp [data-i="${z.s.bsp}"]`); if(b) b.focus(); }
   else if(akt === "baustein" && st){ const i = +el.dataset.i; const an = z.s.an || []; z.s.an = an.includes(i) ? an.filter(x => x !== i) : an.concat(i); zeichne(); const b = app.querySelector(`.baustein[data-i="${i}"]`); if(b) b.focus(); }
   else if(akt === "weiter" && st && kannWeiter(st)){
     if(st.typ === "sortieren" && (z.s.karte || 0) < st.karten.length - 1){ z.s = {karte:(z.s.karte || 0) + 1}; zeichne(true); }
@@ -957,7 +1032,6 @@ function zeigeRueck(){ const r = app.querySelector(".rueck"); if(r && r.scrollIn
 
 app.addEventListener("input", ev => {
   if(ev.target.id === "rueck-text"){ z.rueckText = ev.target.value; }
-  if(ev.target.id === "token-feld"){ z.s.text = ev.target.value; const a = document.getElementById("token-aus"); if(a) a.innerHTML = tokenAusgabe(ev.target.value); }
   if(ev.target.id === "suche"){
     const q = ev.target.value.trim().toLowerCase(); let n = 0;
     app.querySelectorAll("#glossar-liste li").forEach(li => { const zeig = !q || li.dataset.b.includes(q); li.hidden = !zeig; if(zeig) n++; });

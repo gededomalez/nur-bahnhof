@@ -1,6 +1,6 @@
 # Nur Bahnhof
 
-Ein KI-Grundkurs als Web-App in vier Sprachen (Deutsch, Englisch, Spanisch, Arabisch): sechs kurze Etappen mit Quiz, Sortierkarten und Mini-Spielen, dazu Glossar und Quellenliste. Die App ist eine Testfassung und kann mit Einwilligung der Teilnehmenden anonym mitzählen, wie weit sie kommen.
+Ein KI-Grundkurs als Web-App in vier Sprachen (Deutsch, Englisch, Spanisch, Arabisch): sechs Etappen von zusammen rund 30 Minuten mit Quiz, Sortierkarten und Mini-Spielen, dazu Glossar und Quellenliste. Die App ist eine Testfassung und kann mit Einwilligung der Teilnehmenden anonym mitzählen, wie weit sie kommen.
 
 Live: https://gededomalez.github.io/nur-bahnhof/
 
@@ -13,13 +13,15 @@ Live: https://gededomalez.github.io/nur-bahnhof/
 | `manifest.json`, `icon-*.png`, `apple-touch-icon.png` | Damit sich die App auf den Home-Bildschirm legen lässt |
 | `*.woff2` | Die beiden Schriften als lokale Dateien, damit nichts von Dritten nachgeladen wird |
 | `Code.gs` | Skript für die Google-Tabelle, die die Messdaten sammelt |
+| `werkzeug/` | Zwei Prüfskripte: `pruef.js` vergleicht die Übersetzungen mit der deutschen Fassung, `durchlauf.js` spielt den Kurs im Browser durch |
+| `UEBERGABE.md` | Einstieg für alle, die an der App weiterarbeiten: Regeln, offene Punkte, Entscheidungen |
 
 ## Vor dem Teilen
 
 1. Die Tabelle ist eingerichtet und bei `messUrl` eingetragen. Wie das ging, steht unten.
-2. In `index.html` bei `betreiber` Name, Anschrift und E-Mail-Adresse für das Impressum eintragen.
+2. Das Impressum ist in `index.html` bei `betreiber` eingetragen.
 3. Den Text unter „Datenschutz“ in der App prüfen lassen. Er ist ein Entwurf und keine Rechtsberatung.
-4. Alle Inhalte einmal von einem Menschen gegenlesen lassen. Das gilt besonders für die Übersetzungen: Sie wurden mit KI erstellt und brauchen je eine Person, die die Sprache als Muttersprache spricht.
+4. Die deutsche Fassung ist gegengelesen. Die Übersetzungen wurden mit KI erstellt und brauchen je eine Person, die die Sprache als Muttersprache spricht.
 
 Solange `messUrl` leer ist, zählt die App nichts und fragt auch nicht nach einer Einwilligung.
 
@@ -84,6 +86,15 @@ Erlaubt sind Buchstaben, Ziffern und Bindestriche, höchstens 24 Zeichen.
 ## Inhalte ändern
 
 Alle Lektionen stehen in `index.html` in der Liste `HALTE`, die Quellen in `Q`, das Glossar in `GLOSSAR`. Jede Zahl im Kurs verweist auf einen Eintrag in `Q`.
+
+Nach jeder Änderung:
+
+```
+node werkzeug/pruef.js
+node werkzeug/durchlauf.js /tmp/bilder
+```
+
+Das erste Skript muss „Fehler: 0“ melden. Das zweite braucht Playwright und Chrome und legt Bildschirmfotos ab, auch im dunklen Modus und auf Arabisch. Die Regeln dazu stehen in `UEBERGABE.md`.
 
 ## Schriften
 
