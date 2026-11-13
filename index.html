@@ -3,6 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FFD400">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Nur Bahnhof">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
 <title>KI-Kurs Nur Bahnhof</title>
 <style>
 /* Schriften liegen neben dieser Datei, damit beim Laden keine Daten an Dritte gehen */
@@ -10,6 +17,9 @@
 @font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-style:normal;font-display:swap;src:url("atkinson-hyperlegible-latin-700-normal.woff2") format("woff2")}
 @font-face{font-family:"Barlow Condensed";font-weight:600;font-style:normal;font-display:swap;src:url("barlow-condensed-latin-600-normal.woff2") format("woff2")}
 @font-face{font-family:"Barlow Condensed";font-weight:700;font-style:normal;font-display:swap;src:url("barlow-condensed-latin-700-normal.woff2") format("woff2")}
+/* Arabische Schrift: wird nur geladen, wenn arabische Zeichen auf der Seite stehen */
+@font-face{font-family:"Noto Sans Arabic";font-weight:400;font-style:normal;font-display:swap;src:url("noto-sans-arabic-arabic-400-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF}
+@font-face{font-family:"Noto Sans Arabic";font-weight:700;font-style:normal;font-display:swap;src:url("noto-sans-arabic-arabic-700-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF}
 :root{
   /* Layout: eine schmale Spalte wie ein Aushangfahrplan. Die gelbe Tafel trägt Titel und Fahrplan,
      alles andere ist ruhiges Papier. Rückmeldungen sind Signale: Grün heißt Fahrt, Rot heißt Halt. */
@@ -27,8 +37,8 @@
   --vorsicht:#8A5200;
   --fahrt-flaeche:#E3F3E9;
   --halt-flaeche:#FBE8E5;
-  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
-  --text:"Atkinson Hyperlegible",Verdana,Tahoma,sans-serif;
+  --display:"Barlow Condensed","Noto Sans Arabic","Arial Narrow",Arial,sans-serif;
+  --text:"Atkinson Hyperlegible","Noto Sans Arabic",Verdana,Tahoma,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
@@ -112,7 +122,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .fahrplan li{border-bottom:1.5px solid var(--tafel-schrift)}
 .zeile{
   display:grid;grid-template-columns:auto 1fr auto;gap:.85rem;align-items:center;width:100%;
-  background:none;border:0;padding:.8rem 0;text-align:left;color:inherit;
+  background:none;border:0;padding:.8rem 0;text-align:start;color:inherit;
 }
 .nr{
   font-family:var(--display);font-weight:700;font-size:1.5rem;line-height:1;
@@ -167,19 +177,19 @@ button{font:inherit;color:inherit;cursor:pointer}
 .schritte i.war{opacity:1}
 .blatt{flex:1;padding:1.6rem 1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem}
 .blatt p,.blatt li{max-width:62ch}
-.blatt ul{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.45rem}
+.blatt ul,.kasten ul{margin:0;padding-inline-start:1.2rem;display:flex;flex-direction:column;gap:.45rem}
 .fuss{position:sticky;bottom:0;background:var(--papier);border-top:1.5px solid var(--linie);padding:.8rem 1.25rem;display:flex}
 .fuss .knopf{flex:1}
 .fuss.zwei{flex-direction:column;gap:.5rem}
 .kennung{font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 
-.merke{border-left:6px solid var(--tafel);background:var(--karte);padding:.8rem 1rem;border-radius:0 .45rem .45rem 0;font-weight:700}
+.merke{border-inline-start:6px solid var(--tafel);background:var(--karte);padding:.8rem 1rem;border-radius:.3rem;font-weight:700}
 .quelle{font-size:.9rem;color:var(--tinte-leise)}
 .zaehler{font-size:.95rem;color:var(--tinte-leise);font-variant-numeric:tabular-nums}
 
 .optionen{display:flex;flex-direction:column;gap:.6rem}
 .option{
-  background:var(--karte);border:2px solid var(--linie);border-radius:.5rem;padding:.8rem 1rem;text-align:left;min-height:3.2rem;
+  background:var(--karte);border:2px solid var(--linie);border-radius:.5rem;padding:.8rem 1rem;text-align:start;min-height:3.2rem;
   display:flex;gap:.7rem;align-items:flex-start;
 }
 .option:not([disabled]):hover{border-color:var(--gleis)}
@@ -212,7 +222,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .balken-bahn{height:1rem;background:var(--linie);border-radius:.25rem;overflow:hidden}
 .balken-bahn i{display:block;height:100%;background:var(--gleis);border-radius:.25rem}
 .balken-zeile.treffer .balken-bahn i{background:var(--fahrt)}
-.balken-zeile span:last-child{text-align:right}
+.balken-zeile span:last-child{text-align:end}
 
 .eingabe{width:100%;font:inherit;color:var(--tinte);background:var(--karte);border:2px solid var(--linie);border-radius:.5rem;padding:.75rem .9rem;resize:vertical}
 .tokens{display:flex;flex-wrap:wrap;gap:.3rem}
@@ -226,9 +236,25 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 .glossar{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .glossar li{padding:.85rem 0;border-bottom:1.5px solid var(--linie);display:flex;flex-direction:column;gap:.2rem}
-.quellen{margin:0;padding-left:1.2rem;display:flex;flex-direction:column;gap:.8rem}
+.quellen{margin:0;padding-inline-start:1.2rem;display:flex;flex-direction:column;gap:.8rem}
 .quellen li{overflow-wrap:anywhere}
 .quellen small{display:block;color:var(--tinte-leise);font-size:.9rem}
+
+.sprachen{display:flex;flex-wrap:wrap;gap:.4rem}
+.sprachen button{background:transparent;border:2px solid var(--tafel-schrift);color:var(--tafel-schrift);border-radius:2rem;padding:.25rem .85rem;min-height:2.5rem;font-size:.95rem}
+.sprachen button[aria-pressed="true"]{background:var(--tafel-schrift);color:var(--tafel);font-weight:700}
+.install{border:2px solid var(--tafel-schrift);border-radius:.5rem;font-size:.95rem}
+.install summary{cursor:pointer;padding:.65rem .9rem;font-weight:700;min-height:2.75rem}
+.install > div{padding:0 .9rem .9rem;display:flex;flex-direction:column;gap:.7rem}
+.install ol{margin:.25rem 0 0;padding-inline-start:1.3rem;display:flex;flex-direction:column;gap:.25rem}
+.install .inote{font-size:.9rem}
+[hidden]{display:none!important}
+
+:root[lang="ar"] body{line-height:1.8}
+:root[lang="ar"] h1,:root[lang="ar"] h2,:root[lang="ar"] h3{line-height:1.35;letter-spacing:0}
+:root[lang="ar"] h1{font-size:2.4rem}
+:root[lang="ar"] .thema b,:root[lang="ar"] .aussage,:root[lang="ar"] .satz{line-height:1.5}
+:root[lang="ar"] .aussage,:root[lang="ar"] .satz{font-size:1.45rem}
 
 @media (min-width:36rem){
   h1{font-size:3.8rem}
@@ -240,31 +266,33 @@ button{font:inherit;color:inherit;cursor:pointer}
 <body>
 <div id="app"></div>
 
+<script src="texte-en.js"></script>
+<script src="texte-es.js"></script>
+<script src="texte-ar.js"></script>
 <script>
 /* ---------- Einstellungen: vor dem Teilen ausfüllen ---------- */
 const KONFIG = {
-  messUrl: "",                 // Web-App-Adresse des Google-Skripts, endet auf /exec. Leer heißt: es wird nichts gezählt.
+  messUrl: "https://script.google.com/macros/s/AKfycbxyrRUAWNNcFouqQuthr1X44a2VzrpvPBlFxKTQsqC64G0AYvOUuKA52fCpByR0ruU/exec",   // Web-App-Adresse des Google-Skripts. Leer heißt: es wird nichts gezählt.
   version: "0.3",
-  loeschfrist: "bis zum Ende der Testphase, längstens zwölf Monate",
   betreiber: { name: "", anschrift: "", mail: "" }   // Angaben für Impressum und Datenschutzhinweis
 };
 
 /* ---------- Quellen ---------- */
 const Q = {
-  bitkom:{kurz:"Bitkom-Umfrage 2026", titel:"Bitkom-Umfrage zur KI-Nutzung in Deutschland, über 1.000 Befragte ab 16 Jahren", wer:"Bericht bei retail-news.de, 2026", url:"https://retail-news.de/bitkom-ki-umfrage-deutschland-alltag-vorbehalte/"},
-  tokens:{kurz:"OpenAI Help Center", titel:"What are tokens and how to count them?", wer:"OpenAI Help Center, abgerufen im November 2026", url:"https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"},
-  ebu:{kurz:"EBU/BBC-Studie 2025", titel:"News Integrity in AI Assistants. An international PSM study", wer:"European Broadcasting Union und BBC, Oktober 2025", url:"https://www.ebu.ch/Report/MIS-BBC/NI_AI_2025.pdf"},
-  ebuOrf:{kurz:"ORF zur EBU-Studie", titel:"KI bei Nachrichten extrem fehleranfällig", wer:"ORF, Oktober 2025", url:"https://orf.at/stories/3409217/"},
-  vz:{kurz:"Verbraucherzentrale", titel:"KI-Chatbots im Überblick: Was Sie über ChatGPT, Gemini & Copilot wissen sollten", wer:"Verbraucherzentrale, abgerufen im November 2026", url:"https://www.verbraucherzentrale.de/wissen/digitale-welt/apps-und-software/kichatbots-im-ueberblick-was-sie-ueber-chatgpt-gemini-copilot-wissen-sollten-89125"},
-  prompt:{kurz:"Anthropic-Dokumentation", titel:"Prompt engineering overview", wer:"Anthropic, abgerufen im November 2026", url:"https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview"},
-  bsi:{kurz:"BSI zu Deepfakes", titel:"Deepfakes – Gefahren und Gegenmaßnahmen", wer:"Bundesamt für Sicherheit in der Informationstechnik", url:"https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Kuenstliche-Intelligenz/Deepfakes/deepfakes_node.html"},
-  art50:{kurz:"DQS zu Artikel 50 der KI-Verordnung", titel:"KI-Kennzeichnungspflicht nach dem EU AI Act", wer:"DQS, 2026. Gesetzestext: Verordnung (EU) 2024/1689, Artikel 50", url:"https://www.dqsglobal.com/de/entdecken/blog/ki-kennzeichnungspflicht-eu-ai-act"},
-  wasser:{kurz:"ORF zu Googles Messung", titel:"Google: KI-Anfrage braucht Strom wie neun Sekunden TV", wer:"ORF, August 2025", url:"https://orf.at/stories/3403199"},
-  wasser2:{kurz:"ingenieur.de", titel:"Wie viel Strom und Wasser braucht ChatGPT?", wer:"ingenieur.de, mit den Angaben von OpenAI", url:"https://www.ingenieur.de/?p=10662"},
-  strom:{kurz:"cleanthinking.de", titel:"Google, Mistral und Epoch AI beziffern den Strom einer KI-Antwort", wer:"cleanthinking.de, 2026, mit Zahlen der Internationalen Energieagentur", url:"https://cleanthinking.de/sprachmodell"},
-  shades:{kurz:"Gender Shades (2018)", titel:"Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification", wer:"Joy Buolamwini und Timnit Gebru, Proceedings of Machine Learning Research 81, 2018", url:"https://proceedings.mlr.press/v81/buolamwini18a.html"},
-  wef:{kurz:"WEF Future of Jobs 2025", titel:"Future of Jobs Report 2025, Pressemitteilung", wer:"World Economic Forum, Januar 2025", url:"https://www.weforum.org/press/2025/01/future-of-jobs-report-2025-78-million-new-job-opportunities-by-2030-but-urgent-upskilling-needed-to-prepare-workforces/"},
-  curriculum:{kurz:"KI-Basiscurriculum", titel:"KI-Basiscurriculum, Endbericht", wer:"Universität für Weiterbildung Krems im Auftrag des OeAD, November 2025", url:"https://digitalekompetenzen.oead.at/fileadmin/Dokumente/oead.at/Bildung_Digital/Digitale_Kompetenzen/GSDK/KI_Basiscurriculum_Endbericht.pdf"}
+  bitkom:{kurz:"Bitkom 2026", titel:"Bitkom-Umfrage zur KI-Nutzung in Deutschland", wer:"Bitkom / retail-news.de, 2026", url:"https://retail-news.de/bitkom-ki-umfrage-deutschland-alltag-vorbehalte/"},
+  tokens:{kurz:"OpenAI Help Center", titel:"What are tokens and how to count them?", wer:"OpenAI Help Center, 2026", url:"https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them"},
+  ebu:{kurz:"EBU/BBC 2025", titel:"News Integrity in AI Assistants. An international PSM study", wer:"European Broadcasting Union & BBC, 10/2025", url:"https://www.ebu.ch/Report/MIS-BBC/NI_AI_2025.pdf"},
+  ebuOrf:{kurz:"ORF", titel:"KI bei Nachrichten extrem fehleranfällig", wer:"ORF, 10/2025", url:"https://orf.at/stories/3409217/"},
+  vz:{kurz:"Verbraucherzentrale", titel:"KI-Chatbots im Überblick: Was Sie über ChatGPT, Gemini & Copilot wissen sollten", wer:"Verbraucherzentrale, 2026", url:"https://www.verbraucherzentrale.de/wissen/digitale-welt/apps-und-software/kichatbots-im-ueberblick-was-sie-ueber-chatgpt-gemini-copilot-wissen-sollten-89125"},
+  prompt:{kurz:"Anthropic Docs", titel:"Prompt engineering overview", wer:"Anthropic, 2026", url:"https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/overview"},
+  bsi:{kurz:"BSI", titel:"Deepfakes – Gefahren und Gegenmaßnahmen", wer:"Bundesamt für Sicherheit in der Informationstechnik (BSI)", url:"https://www.bsi.bund.de/DE/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Kuenstliche-Intelligenz/Deepfakes/deepfakes_node.html"},
+  art50:{kurz:"DQS, EU AI Act Art. 50", titel:"KI-Kennzeichnungspflicht nach dem EU AI Act", wer:"DQS, 2026; Verordnung (EU) 2024/1689, Art. 50", url:"https://www.dqsglobal.com/de/entdecken/blog/ki-kennzeichnungspflicht-eu-ai-act"},
+  wasser:{kurz:"ORF", titel:"Google: KI-Anfrage braucht Strom wie neun Sekunden TV", wer:"ORF, 08/2025", url:"https://orf.at/stories/3403199"},
+  wasser2:{kurz:"ingenieur.de", titel:"Wie viel Strom und Wasser braucht ChatGPT?", wer:"ingenieur.de", url:"https://www.ingenieur.de/?p=10662"},
+  strom:{kurz:"cleanthinking.de", titel:"Google, Mistral und Epoch AI beziffern den Strom einer KI-Antwort", wer:"cleanthinking.de, 2026 (IEA)", url:"https://cleanthinking.de/sprachmodell"},
+  shades:{kurz:"Gender Shades 2018", titel:"Gender Shades: Intersectional Accuracy Disparities in Commercial Gender Classification", wer:"Buolamwini & Gebru, PMLR 81, 2018", url:"https://proceedings.mlr.press/v81/buolamwini18a.html"},
+  wef:{kurz:"WEF 2025", titel:"Future of Jobs Report 2025", wer:"World Economic Forum, 01/2025", url:"https://www.weforum.org/press/2025/01/future-of-jobs-report-2025-78-million-new-job-opportunities-by-2030-but-urgent-upskilling-needed-to-prepare-workforces/"},
+  curriculum:{kurz:"KI-Basiscurriculum", titel:"KI-Basiscurriculum, Endbericht", wer:"Universität für Weiterbildung Krems / OeAD, 11/2025", url:"https://digitalekompetenzen.oead.at/fileadmin/Dokumente/oead.at/Bildung_Digital/Digitale_Kompetenzen/GSDK/KI_Basiscurriculum_Endbericht.pdf"}
 };
 
 /* ---------- Inhalte ---------- */
@@ -396,6 +424,95 @@ const GLOSSAR = [
   ["Wissensstand","Der Stichtag, bis zu dem die Trainingstexte eines Modells reichen. Was danach geschah, kennt es nur, wenn es im Internet suchen kann."]
 ];
 
+/* ---------- Texte der Oberfläche auf Deutsch. Übersetzungen: texte-en.js, texte-es.js, texte-ar.js ---------- */
+const UI_DE = {
+  appTitel:"KI-Kurs Nur Bahnhof",
+  titel:"Bei KI nur Bahnhof?",
+  untertitel:"Sechs Halte, je rund vier Minuten. Danach weißt du, wovon alle reden und worauf du achten musst.",
+  stand:"{n} von {m} Halten geschafft.",
+  tage:"Du bist {n} Tage in Folge dabei.",
+  losfahren:"Losfahren", nochmal:"Noch einmal ab Halt 1", weiterMit:"Weiter mit Halt {n}",
+  fahrplan:"Fahrplan", fahrplanSpalten:"Halt, Thema, Dauer",
+  min:"{n} Min", offen:"offen", geschafft:"geschafft", vonRichtig:"{r} von {g}",
+  haltAria:"Halt {n}: {titel}, {min} Minuten, {stand}",
+  quelleKastenH:"Jede Zahl hat eine Quelle",
+  quelleKastenP:"Bei jeder Angabe in diesem Kurs steht, woher sie stammt. Die ganze Liste findest du unter Quellen. Begriffe zum Nachschlagen stehen im Glossar.",
+  navFahrplan:"Fahrplan", navGlossar:"Glossar", navQuellen:"Quellen", navDatenschutz:"Datenschutz", navAria:"Bereiche",
+  sprache:"Sprache",
+  instSum:"Als App auf den Home-Bildschirm legen", instJetzt:"Jetzt installieren",
+  fahrkarteH:"Fahrkarte KI-Grundlagen", fahrkarteSub:"Alle sechs Halte geschafft", fahrkarteAria:"Deine Fahrkarte",
+  fahrkarteP:"Das ist eine Testfassung. Deine Antworten helfen, den Kurs besser zu machen.",
+  fVerst:"<b>Wie verständlich war der Kurs?</b> 1 heißt gar nicht, 5 heißt sehr.",
+  fWeiter:"<b>Würdest du weitere Halte fahren?</b>",
+  ja:"Ja", vielleicht:"Vielleicht", nein:"Nein",
+  fText:"<b>Was hat gefehlt oder gestört?</b> Freiwillig. Bitte keine persönlichen Daten.",
+  senden:"Rückmeldung senden", kopieren:"Rückmeldung kopieren",
+  gesendet:"Gesendet. Danke für deine Rückmeldung.",
+  fehlt:"Beantworte bitte zuerst die beiden Fragen.",
+  kopiert:"Kopiert. Füge den Text in eine Nachricht an die Person ein, die dir den Kurs geschickt hat.",
+  kopierFehler:"Kopieren hat nicht geklappt. Markiere den Text und kopiere ihn selbst:",
+  kopieText:"KI-Kurs „Nur Bahnhof“ geschafft: {r} von {g} richtig. Verständlich: {v} von 5. Weitere Halte: {w}.",
+  anmerkung:"Anmerkung:",
+  glossarH:"Glossar", glossarP:"Sechzehn Begriffe, die dir bei KI immer wieder begegnen.",
+  suchen:"Begriff suchen", suchPlatz:"zum Beispiel Token", glossarLeer:"Kein Begriff gefunden. Versuch ein anderes Wort.",
+  quellenH:"Quellen",
+  quellenP:"Stand der Inhalte: November 2026. Zahlen zu KI ändern sich schnell. Prüfe das Datum, bevor du eine Angabe weitergibst.",
+  quellenSprache:"",
+  aufbauH:"Wie der Kurs aufgebaut ist",
+  aufbauP1:"Die Themen folgen den ersten vier Lernfeldern des KI-Basiscurriculums: KI erkennen und verstehen, verantwortungsvoll mit KI umgehen, KI-gestützte Informationssuche bewerten, mit KI kommunizieren.",
+  aufbauP2:"Die Prozentwerte im Spiel „Spiel Sprachmodell“ sind ausgedachte Beispiele. Die Token-Zerlegung ist vereinfacht. Beides ist an Ort und Stelle gekennzeichnet.",
+  ueberH:"Über diese Testfassung",
+  ueberP1:"Texte und Code wurden mit KI-Unterstützung erstellt und mit den oben genannten Quellen abgeglichen. Vor einem öffentlichen Einsatz sollte ein Mensch alle Inhalte gegenlesen.",
+  ueberP2:"Dein Fortschritt wird in diesem Browser gespeichert. Ob der Test anonym mitzählen darf, entscheidest du selbst. Mehr dazu steht unter Datenschutz.",
+  reset:"Fortschritt zurücksetzen", resetFrage:"Wirklich alles löschen?",
+  quelle:"Quelle", quellen:"Quellen",
+  richtig:"Richtig.", falsch:"Nicht ganz.", falschAntwort:"Nicht ganz. Die Antwort ist: {a}.",
+  karte:"Karte {n} von {m}",
+  balkenAria:"So wahrscheinlich wären die Wörter für ein Sprachmodell",
+  beispielwerte:"Die Prozentwerte sind ausgedachte Beispiele, keine Messung.",
+  unter1:"unter 1 %", prozent:"{n} %",
+  tokenLabel:"Schreib einen Satz und sieh, in welche Stücke er ungefähr zerfällt.",
+  tokenLeer:"Schreib etwas in das Feld.",
+  tokenZahl:"{z} Zeichen, ungefähr {t} Tokens",
+  tokenHinweis:"Vereinfachte Zerlegung zum Ausprobieren. Echte Modelle teilen Text anders, und jeder Anbieter ein wenig verschieden.",
+  ratenNoch:"Die KI muss noch raten: {liste}.", ratenNichts:"Jetzt muss die KI nichts mehr raten.",
+  weiter:"Weiter", naechsteKarte:"Nächste Karte", abschliessen:"Halt abschließen",
+  zumFahrplan:"Zum Fahrplan", haltVon:"Halt {n} von {m}", fortschrittAria:"Fortschritt in diesem Halt",
+  haltGeschafft:"Halt {n} geschafft",
+  ergebnis:"Du hast {r} von {g} Aufgaben richtig gelöst.", bestes:"Dein bestes Ergebnis hier: {r}.",
+  mitnehmen:"Das nimmst du mit", zurFahrkarte:"Zur Fahrkarte", weiterZu:"Weiter zu Halt {n}",
+  vorAbfahrt:"Vor der Abfahrt",
+  einwH:"Darf dieser Test anonym mitzählen?",
+  einwP:"Dieser Kurs ist eine Testfassung. Um ihn zu verbessern, möchte {wer} wissen, wie weit Menschen kommen und wo sie aussteigen.",
+  derAnbieter:"der Anbieter",
+  wasH:"Was gezählt wird",
+  wasL:["welche Halte du startest und schaffst","deine Punktzahl und wie lange du brauchst","deine Antworten auf die Fragen am Ende","in welcher Sprache du den Kurs nutzt","eine zufällige Kennung, damit deine Halte zusammengehören"],
+  nichtH:"Was nicht gezählt wird",
+  nichtL:["dein Name, deine E-Mail-Adresse, dein Standort","was du in Textfelder im Kurs tippst"],
+  einwHinweis:"Die Daten landen in einer Google-Tabelle. Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht. Der Kurs funktioniert auch ohne Zählung, und du kannst sie jederzeit unter Datenschutz ausschalten.",
+  einwJa:"Ja, anonym mitzählen", einwNein:"Ohne Zählung starten",
+  dsH:"Impressum und Datenschutz",
+  massgeblich:"",
+  anbieterH:"Anbieter", anbieterFehlt:"Die Angaben werden vor der Veröffentlichung ergänzt.",
+  aufrufH:"Was beim Aufruf passiert",
+  aufrufP1:"Die Seite liegt bei GitHub Pages (GitHub Inc., USA). Beim Laden verarbeitet GitHub technisch deine IP-Adresse. Schriften und alle anderen Dateien kommen vom selben Server, es wird nichts von Dritten nachgeladen.",
+  aufrufP2:"Dein Fortschritt, deine Sprache und deine Entscheidung zur Zählung werden nur in deinem Browser gespeichert.",
+  zaehlH:"Anonyme Zählung",
+  zaehlAus:"In dieser Fassung wird nichts gezählt und nichts übertragen.",
+  zaehlP:"Der Test zählt nur mit, wenn du zugestimmt hast. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 Buchst. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit hier widerrufen.",
+  zaehlWas:"<b>Was:</b> welche Halte du startest und schaffst, Punktzahl, Dauer, Sprache, deine Antworten am Ende, eine zufällige Kennung und gegebenenfalls ein Kürzel dafür, über welchen Link du gekommen bist.",
+  zaehlNicht:"<b>Was nicht:</b> Name, E-Mail-Adresse, Standort, Eingaben im Token-Feld. Es werden keine Cookies gesetzt.",
+  zaehlWohin:"<b>Wohin:</b> in eine Google-Tabelle des Anbieters (Google Ireland Limited, Verarbeitung auch in den USA möglich). Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht.",
+  zaehlLang:"<b>Wie lange:</b> bis zum Ende der Testphase, längstens zwölf Monate.",
+  standJa:"Du zählst anonym mit.", standNein:"Du hast die Zählung abgelehnt.", standOffen:"Du wurdest noch nicht gefragt.",
+  standLabel:"Stand:",
+  kennung:"Deine Kennung: <b>{id}</b>. Nenne sie, wenn du deine Daten löschen lassen möchtest.",
+  zaehlAusBtn:"Zählung ausschalten", zaehlAnBtn:"Anonym mitzählen",
+  rechteH:"Deine Rechte",
+  rechteP:"Du kannst Auskunft, Berichtigung und Löschung verlangen und dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Wende dich dafür an den Anbieter."
+};
+const INSTALL_DE = "<div class=\"ib\"><b>iPhone (Safari)</b><ol><li>Diesen Kurs in <strong>Safari</strong> öffnen.</li><li>Unten auf <strong>•••</strong> tippen, dann auf <strong>Teilen</strong>. Bei älteren iOS-Versionen direkt auf das Teilen-Symbol (Quadrat mit Pfeil nach oben).</li><li>Nach unten scrollen und <strong>Zum Home-Bildschirm</strong> wählen (falls nötig zuerst „Mehr anzeigen“).</li><li><strong>Als Web-App öffnen</strong> eingeschaltet lassen und auf <strong>Hinzufügen</strong> tippen.</li></ol></div><div class=\"ib\"><b>Android (Chrome)</b><ol><li>Diesen Kurs in <strong>Chrome</strong> öffnen.</li><li>Oben rechts auf <strong>⋮</strong> tippen.</li><li><strong>Zum Startbildschirm hinzufügen</strong> oder <strong>App installieren</strong> wählen und mit <strong>Installieren</strong> bzw. <strong>Hinzufügen</strong> bestätigen.</li></ol></div><p class=\"inote\">Gut zu wissen: Der Fortschritt wird pro Browser bzw. App gespeichert. Was du im Browser gelernt hast, erscheint nicht automatisch in der App auf dem Home-Bildschirm. Die Menünamen können je nach System-Version leicht abweichen.</p>";
+
 /* ---------- Zustand ---------- */
 const SPEICHER = "nurbahnhof-v1";
 const app = document.getElementById("app");
@@ -403,13 +520,57 @@ const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">"
 
 function laden(){ try{ return JSON.parse(localStorage.getItem(SPEICHER)) || {}; }catch(e){ return {}; } }
 function sichern(){ try{ localStorage.setItem(SPEICHER, JSON.stringify(fort)); }catch(e){} }
-let fort = Object.assign({erledigt:{}, tage:0, letzterTag:null, rueck:{}, zaehlen:null, id:null, q:"", gemeldet:{}}, laden());
+let fort = Object.assign({erledigt:{}, tage:0, letzterTag:null, rueck:{}, zaehlen:null, id:null, q:"", gemeldet:{}, l:null}, laden());
 
 const ANSICHTEN = ["fahrplan","glossar","quellen","datenschutz"];
-let z = {ansicht:"fahrplan", halt:null, schritt:0, s:{}, lauf:{richtig:0,gesamt:0}, ende:false, kopiert:"", zurueck:false, frage:null, startzeit:0, rueckText:""};
+let z = {ansicht:"fahrplan", halt:null, schritt:0, s:{}, lauf:{richtig:0,gesamt:0}, ende:false, kopiert:"", zurueck:false, frage:null, startzeit:0, rueckText:"", l:"de"};
+
+/* ---------- Sprachen ---------- */
+const SPRACHEN = {de:"Deutsch", en:"English", es:"Español", ar:"العربية"};
+const TX = window.NB_TEXTE || {};
+const hatSprache = l => l === "de" || (Object.prototype.hasOwnProperty.call(SPRACHEN, l) && !!TX[l]);
+function urlWert(name){ try{ return new URLSearchParams(location.search).get(name) || ""; }catch(e){ return ""; } }
+function startSprache(){
+  if(hatSprache(fort.l)) return fort.l;                 // eigene Wahl geht vor
+  const u = urlWert("l").toLowerCase();
+  if(hatSprache(u)) return u;                           // dann die Sprache aus dem Link (?l=ar)
+  const liste = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "de"]);
+  for(const x of liste){ const k = String(x).slice(0, 2).toLowerCase(); if(hatSprache(k)) return k; }
+  return "de";
+}
+function t(k, v){
+  let s = (z.l !== "de" && TX[z.l] && TX[z.l].ui && TX[z.l].ui[k] != null) ? TX[z.l].ui[k] : UI_DE[k];
+  if(s == null) return k;
+  if(v && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (m, n) => v[n] != null ? v[n] : m);
+  return s;
+}
+const halteCache = {};
+function mische(st, x){
+  const o = Object.assign({}, st, x);
+  if(st.typ === "sortieren") o.karten = st.karten.map((k, n) => Object.assign({}, k, x.karten[n]));
+  if(st.typ === "vorhersage") o.optionen = st.optionen.map((op, n) => Object.assign({}, op, {w:x.optionen[n]}));
+  return o;
+}
+function halte(){
+  if(z.l === "de" || !TX[z.l]) return HALTE;
+  if(!halteCache[z.l]){
+    const T = TX[z.l].halte;
+    halteCache[z.l] = HALTE.map((h, i) => Object.assign({}, h, {titel:T[i].titel, kurz:T[i].kurz, mitnehmen:T[i].mitnehmen, schritte:h.schritte.map((st, j) => mische(st, T[i].s[j]))}));
+  }
+  return halteCache[z.l];
+}
+const glossar = () => (z.l !== "de" && TX[z.l] && TX[z.l].glossar) ? TX[z.l].glossar : GLOSSAR;
+function setzeSprache(l, merken){
+  if(!hatSprache(l)) l = "de";
+  z.l = l;
+  if(merken){ fort.l = l; sichern(); }
+  document.documentElement.lang = l;
+  document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+  document.title = t("appTitel");
+}
 
 /* ---------- Messung: nur mit Einwilligung und nur, wenn eine Adresse eingetragen ist ---------- */
-const QUELLE = (() => { try{ return (new URLSearchParams(location.search).get("q") || "").replace(/[^a-z0-9-]/gi, "").slice(0, 24).toLowerCase(); }catch(e){ return ""; } })();
+const QUELLE = urlWert("q").replace(/[^a-z0-9-]/gi, "").slice(0, 24).toLowerCase();
 const messBereit = () => !!KONFIG.messUrl;
 const messAktiv = () => messBereit() && fort.zaehlen === "ja" && !!fort.id;
 function neueId(){
@@ -419,7 +580,7 @@ function neueId(){
 }
 function melde(e, d){
   if(!messAktiv()) return;
-  const p = Object.assign({v:KONFIG.version, id:fort.id, q:fort.q || "", e:e}, d || {});
+  const p = Object.assign({v:KONFIG.version, id:fort.id, q:fort.q || "", l:z.l, e:e}, d || {});
   try{
     fetch(KONFIG.messUrl, {method:"POST", mode:"no-cors", keepalive:true, headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(p)}).catch(() => {});
   }catch(err){}
@@ -428,74 +589,90 @@ function melde(e, d){
 const alleErledigt = () => HALTE.every(h => fort.erledigt[h.id]);
 const anzahlErledigt = () => HALTE.filter(h => fort.erledigt[h.id]).length;
 const naechsterHalt = () => { const i = HALTE.findIndex(h => !fort.erledigt[h.id]); return i < 0 ? 0 : i; };
+const alsApp = () => { try{ return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) || window.navigator.standalone === true; }catch(e){ return false; } };
+let installEreignis = null;
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); installEreignis = e; const b = document.getElementById("inst-jetzt"); if(b) b.hidden = false; });
 
 /* ---------- Bausteine ---------- */
 function quelleHTML(keys){
   if(!keys || !keys.length) return "";
-  const links = keys.map(k => `<a href="${Q[k].url}" target="_blank" rel="noopener">${esc(Q[k].kurz)}</a>`).join(", ");
-  return `<p class="quelle">${keys.length > 1 ? "Quellen" : "Quelle"}: ${links}</p>`;
+  const links = keys.map(k => `<a href="${Q[k].url}" target="_blank" rel="noopener" dir="ltr">${esc(Q[k].kurz)}</a>`).join(z.l === "ar" ? "، " : ", ");
+  return `<p class="quelle">${keys.length > 1 ? t("quellen") : t("quelle")}: ${links}</p>`;
 }
 function rueckHTML(ok, text, keys, kopf){
-  return `<div class="rueck ${ok ? "gut" : "schlecht"}" role="status"><p class="rueck-kopf"><span class="lampe"></span>${kopf || (ok ? "Richtig." : "Nicht ganz.")}</p><p>${text}</p>${quelleHTML(keys)}</div>`;
+  return `<div class="rueck ${ok ? "gut" : "schlecht"}" role="status"><p class="rueck-kopf"><span class="lampe"></span>${kopf || (ok ? t("richtig") : t("falsch"))}</p><p>${text}</p>${quelleHTML(keys)}</div>`;
 }
 function streckeHTML(){
   return `<div class="strecke" aria-hidden="true">` + HALTE.map((h,i) => `${i ? "<b></b>" : ""}<i class="${fort.erledigt[h.id] ? "voll" : ""}"></i>`).join("") + `</div>`;
 }
+function sprachenHTML(){
+  return `<div class="sprachen" role="group" aria-label="${esc(t("sprache"))}">` + Object.keys(SPRACHEN).filter(hatSprache).map(l => `<button data-akt="sprache" data-l="${l}" lang="${l}" aria-pressed="${z.l === l}">${SPRACHEN[l]}</button>`).join("") + `</div>`;
+}
+function installHTML(){
+  if(alsApp()) return "";
+  const body = (z.l !== "de" && TX[z.l] && TX[z.l].install) ? TX[z.l].install : INSTALL_DE;
+  return `<details class="install" id="install"><summary>${esc(t("instSum"))}</summary><div><button class="knopf" id="inst-jetzt" data-akt="installieren" ${installEreignis ? "" : "hidden"}>${esc(t("instJetzt"))}</button>${body}</div></details>`;
+}
 
 /* ---------- Seiten ---------- */
 function fahrplanHTML(){
+  const H = halte();
   const n = anzahlErledigt(), nx = naechsterHalt();
-  const knopf = n === 0 ? "Losfahren" : alleErledigt() ? "Noch einmal ab Halt 1" : `Weiter mit Halt ${nx + 1}`;
-  const zeilen = HALTE.map((h,i) => {
+  const knopf = n === 0 ? t("losfahren") : alleErledigt() ? t("nochmal") : t("weiterMit", {n:nx + 1});
+  const zeilen = H.map((h,i) => {
     const e = fort.erledigt[h.id];
-    const stand = e ? `<span class="erledigt">${e.gesamt ? `${e.richtig} von ${e.gesamt}` : "geschafft"}</span>` : `<span>offen</span>`;
-    return `<li><button class="zeile ${!alleErledigt() && i === nx ? "naechster" : ""}" data-akt="start" data-halt="${i}" aria-label="Halt ${i+1}: ${esc(h.titel)}, ${h.dauer} Minuten, ${e ? "geschafft" : "offen"}">
+    const standText = e ? (e.gesamt ? t("vonRichtig", {r:e.richtig, g:e.gesamt}) : t("geschafft")) : t("offen");
+    return `<li><button class="zeile ${!alleErledigt() && i === nx ? "naechster" : ""}" data-akt="start" data-halt="${i}" aria-label="${esc(t("haltAria", {n:i + 1, titel:h.titel, min:h.dauer, stand:e ? t("geschafft") : t("offen")}))}">
       <span class="nr">${i+1}</span>
       <span class="thema"><b>${esc(h.titel)}</b><span>${esc(h.kurz)}</span></span>
-      <span class="rand"><span>${h.dauer} Min</span>${stand}</span>
+      <span class="rand"><span>${esc(t("min", {n:h.dauer}))}</span><span class="${e ? "erledigt" : ""}">${esc(standText)}</span></span>
     </button></li>`;
   }).join("");
-  const tage = fort.tage > 1 ? ` Du bist ${fort.tage} Tage in Folge dabei.` : "";
+  const tage = fort.tage > 1 ? " " + t("tage", {n:fort.tage}) : "";
   return `
   <header class="tafel">
-    <h1>Bei KI nur Bahnhof?</h1>
-    <p class="tafel-text">Sechs Halte, je rund vier Minuten. Danach weißt du, wovon alle reden und worauf du achten musst.</p>
-    <div class="stand">${streckeHTML()}<p>${n} von ${HALTE.length} Halten geschafft.${tage}</p></div>
-    <button class="knopf" data-akt="start" data-halt="${alleErledigt() ? 0 : nx}">${knopf}</button>
-    <div class="fahrplan-kopf"><h2>Fahrplan</h2><span>Halt, Thema, Dauer</span></div>
+    ${sprachenHTML()}
+    ${installHTML()}
+    <h1>${esc(t("titel"))}</h1>
+    <p class="tafel-text">${esc(t("untertitel"))}</p>
+    <div class="stand">${streckeHTML()}<p>${esc(t("stand", {n:n, m:HALTE.length}) + tage)}</p></div>
+    <button class="knopf" data-akt="start" data-halt="${alleErledigt() ? 0 : nx}">${esc(knopf)}</button>
+    <div class="fahrplan-kopf"><h2>${esc(t("fahrplan"))}</h2><span>${esc(t("fahrplanSpalten"))}</span></div>
     <ol class="fahrplan">${zeilen}</ol>
   </header>
   <div class="seite">
     ${alleErledigt() ? fahrkarteHTML() : ""}
     <section class="kasten">
-      <h3>Jede Zahl hat eine Quelle</h3>
-      <p>Bei jeder Angabe in diesem Kurs steht, woher sie stammt. Die ganze Liste findest du unter Quellen. Begriffe zum Nachschlagen stehen im Glossar.</p>
+      <h3>${esc(t("quelleKastenH"))}</h3>
+      <p>${esc(t("quelleKastenP"))}</p>
     </section>
   </div>`;
 }
 
+const WEITER_WERTE = [["Ja","ja"],["Vielleicht","vielleicht"],["Nein","nein"]];   // gespeichert wird immer der deutsche Wert
 function fahrkarteHTML(){
   const r = HALTE.reduce((a,h) => a + (fort.erledigt[h.id].richtig || 0), 0);
   const g = HALTE.reduce((a,h) => a + (fort.erledigt[h.id].gesamt || 0), 0);
   const v = fort.rueck.verst, w = fort.rueck.weiter;
-  const text = `KI-Kurs „Nur Bahnhof“ geschafft: ${r} von ${g} richtig. Verständlich: ${v || "–"} von 5. Weitere Halte: ${w || "–"}.${z.rueckText ? " Anmerkung: " + z.rueckText : ""}`;
+  const wPaar = WEITER_WERTE.find(x => x[0] === w);
+  const text = t("kopieText", {r:r, g:g, v:v || "–", w:wPaar ? t(wPaar[1]) : "–"}) + (z.rueckText ? " " + t("anmerkung") + " " + z.rueckText : "");
   const senden = messAktiv();
   let status = "";
-  if(z.kopiert === "gesendet") status = `<p class="leise" role="status">Gesendet. Danke für deine Rückmeldung.</p>`;
-  if(z.kopiert === "fehlt") status = `<p class="leise" role="status">Beantworte bitte zuerst die beiden Fragen.</p>`;
-  if(z.kopiert === "ok") status = `<p class="leise" role="status">Kopiert. Füge den Text in eine Nachricht an die Person ein, die dir den Kurs geschickt hat.</p>`;
-  if(z.kopiert === "manuell") status = `<p class="leise" role="status">Kopieren hat nicht geklappt. Markiere den Text und kopiere ihn selbst:</p><p class="kopie">${esc(text)}</p>`;
+  if(z.kopiert === "gesendet") status = `<p class="leise" role="status">${esc(t("gesendet"))}</p>`;
+  if(z.kopiert === "fehlt") status = `<p class="leise" role="status">${esc(t("fehlt"))}</p>`;
+  if(z.kopiert === "ok") status = `<p class="leise" role="status">${esc(t("kopiert"))}</p>`;
+  if(z.kopiert === "manuell") status = `<p class="leise" role="status">${esc(t("kopierFehler"))}</p><p class="kopie">${esc(text)}</p>`;
   return `
-  <section class="fahrkarte" aria-label="Deine Fahrkarte">
-    <div class="fahrkarte-kopf"><div><h3>Fahrkarte KI-Grundlagen</h3><p class="leise">Alle sechs Halte geschafft</p></div><div class="fahrkarte-zahl">${r}/${g}</div></div>
-    <p>Das ist eine Testfassung. Deine Antworten helfen, den Kurs besser zu machen.</p>
-    <div class="frage-zeile"><p id="f-verst"><b>Wie verständlich war der Kurs?</b> 1 heißt gar nicht, 5 heißt sehr.</p>
+  <section class="fahrkarte" aria-label="${esc(t("fahrkarteAria"))}">
+    <div class="fahrkarte-kopf"><div><h3>${esc(t("fahrkarteH"))}</h3><p class="leise">${esc(t("fahrkarteSub"))}</p></div><div class="fahrkarte-zahl" dir="ltr">${r}/${g}</div></div>
+    <p>${esc(t("fahrkarteP"))}</p>
+    <div class="frage-zeile"><p id="f-verst">${t("fVerst")}</p>
       <div class="wahl" role="group" aria-labelledby="f-verst">${[1,2,3,4,5].map(i => `<button data-akt="rueck" data-feld="verst" data-wert="${i}" aria-pressed="${v == i}">${i}</button>`).join("")}</div></div>
-    <div class="frage-zeile"><p id="f-weiter"><b>Würdest du weitere Halte fahren?</b></p>
-      <div class="wahl" role="group" aria-labelledby="f-weiter">${["Ja","Vielleicht","Nein"].map(t => `<button data-akt="rueck" data-feld="weiter" data-wert="${t}" aria-pressed="${w === t}">${t}</button>`).join("")}</div></div>
-    <div class="frage-zeile"><label for="rueck-text"><b>Was hat gefehlt oder gestört?</b> Freiwillig. Bitte keine persönlichen Daten.</label>
-      <textarea class="eingabe" id="rueck-text" rows="3" maxlength="400">${esc(z.rueckText)}</textarea></div>
-    <button class="knopf ${senden ? "" : "leise"}" data-akt="${senden ? "senden" : "kopieren"}" data-text="${esc(text)}">${senden ? "Rückmeldung senden" : "Rückmeldung kopieren"}</button>
+    <div class="frage-zeile"><p id="f-weiter">${t("fWeiter")}</p>
+      <div class="wahl" role="group" aria-labelledby="f-weiter">${WEITER_WERTE.map(x => `<button data-akt="rueck" data-feld="weiter" data-wert="${x[0]}" aria-pressed="${w === x[0]}">${esc(t(x[1]))}</button>`).join("")}</div></div>
+    <div class="frage-zeile"><label for="rueck-text">${t("fText")}</label>
+      <textarea class="eingabe" id="rueck-text" rows="3" maxlength="400" dir="auto">${esc(z.rueckText)}</textarea></div>
+    <button class="knopf ${senden ? "" : "leise"}" data-akt="${senden ? "senden" : "kopieren"}" data-text="${esc(text)}">${esc(senden ? t("senden") : t("kopieren"))}</button>
     ${status}
   </section>`;
 }
@@ -503,105 +680,107 @@ function fahrkarteHTML(){
 function glossarHTML(){
   return `
   <div class="seite">
-    <h2>Glossar</h2>
-    <p class="leise">Sechzehn Begriffe, die dir bei KI immer wieder begegnen.</p>
-    <label for="suche" class="leise">Begriff suchen</label>
-    <input class="eingabe" id="suche" type="search" autocomplete="off" placeholder="zum Beispiel Token">
-    <ul class="glossar" id="glossar-liste">${GLOSSAR.map(([b,t]) => `<li data-b="${esc((b + " " + t).toLowerCase())}"><h3>${esc(b)}</h3><p>${esc(t)}</p></li>`).join("")}</ul>
-    <p class="leise" id="glossar-leer" hidden>Kein Begriff gefunden. Versuch ein anderes Wort.</p>
+    <h2>${esc(t("glossarH"))}</h2>
+    <p class="leise">${esc(t("glossarP"))}</p>
+    <label for="suche" class="leise">${esc(t("suchen"))}</label>
+    <input class="eingabe" id="suche" type="search" autocomplete="off" placeholder="${esc(t("suchPlatz"))}">
+    <ul class="glossar" id="glossar-liste">${glossar().map(([b,x]) => `<li data-b="${esc((b + " " + x).toLowerCase())}"><h3>${esc(b)}</h3><p>${esc(x)}</p></li>`).join("")}</ul>
+    <p class="leise" id="glossar-leer" hidden>${esc(t("glossarLeer"))}</p>
   </div>`;
 }
 
 function quellenHTML(){
   const reihenfolge = ["bitkom","tokens","ebu","ebuOrf","vz","prompt","bsi","art50","wasser","wasser2","strom","shades","wef","curriculum"];
+  const hinweis = t("quellenSprache");
   return `
   <div class="seite">
-    <h2>Quellen</h2>
-    <p>Stand der Inhalte: November 2026. Zahlen zu KI ändern sich schnell. Prüfe das Datum, bevor du eine Angabe weitergibst.</p>
-    <ol class="quellen">${reihenfolge.map(k => `<li><a href="${Q[k].url}" target="_blank" rel="noopener">${esc(Q[k].titel)}</a><small>${esc(Q[k].wer)}</small></li>`).join("")}</ol>
+    <h2>${esc(t("quellenH"))}</h2>
+    <p>${esc(t("quellenP"))}</p>
+    ${hinweis ? `<p class="leise">${esc(hinweis)}</p>` : ""}
+    <ol class="quellen">${reihenfolge.map(k => `<li><a href="${Q[k].url}" target="_blank" rel="noopener" dir="ltr">${esc(Q[k].titel)}</a><small dir="ltr">${esc(Q[k].wer)}</small></li>`).join("")}</ol>
     <section class="kasten">
-      <h3>Wie der Kurs aufgebaut ist</h3>
-      <p>Die Themen folgen den ersten vier Lernfeldern des KI-Basiscurriculums: KI erkennen und verstehen, verantwortungsvoll mit KI umgehen, KI-gestützte Informationssuche bewerten, mit KI kommunizieren.</p>
-      <p>Die Prozentwerte im Spiel „Spiel Sprachmodell“ sind ausgedachte Beispiele. Die Token-Zerlegung ist vereinfacht. Beides ist an Ort und Stelle gekennzeichnet.</p>
+      <h3>${esc(t("aufbauH"))}</h3>
+      <p>${esc(t("aufbauP1"))}</p>
+      <p>${esc(t("aufbauP2"))}</p>
     </section>
     <section class="kasten">
-      <h3>Über diese Testfassung</h3>
-      <p>Texte und Code wurden mit KI-Unterstützung erstellt und mit den oben genannten Quellen abgeglichen. Vor einem öffentlichen Einsatz sollte ein Mensch alle Inhalte gegenlesen.</p>
-      <p>Dein Fortschritt wird in diesem Browser gespeichert. Ob der Test anonym mitzählen darf, entscheidest du selbst. Mehr dazu steht unter Datenschutz.</p>
-      <button class="knopf leise" data-akt="zuruecksetzen">${z.zurueck ? "Wirklich alles löschen?" : "Fortschritt zurücksetzen"}</button>
+      <h3>${esc(t("ueberH"))}</h3>
+      <p>${esc(t("ueberP1"))}</p>
+      <p>${esc(t("ueberP2"))}</p>
+      <button class="knopf leise" data-akt="zuruecksetzen">${esc(z.zurueck ? t("resetFrage") : t("reset"))}</button>
     </section>
   </div>`;
 }
 
 function datenschutzHTML(){
   const b = KONFIG.betreiber;
-  const wer = b.name ? `${esc(b.name)}<br>${esc(b.anschrift).replace(/\n/g, "<br>")}<br>${esc(b.mail)}` : "Die Angaben werden vor der Veröffentlichung ergänzt.";
+  const wer = b.name ? `<span dir="auto">${esc(b.name)}<br>${esc(b.anschrift).replace(/\n/g, "<br>")}<br>${esc(b.mail)}</span>` : esc(t("anbieterFehlt"));
+  const mass = t("massgeblich");
   let zaehlung;
-  if(!messBereit()) zaehlung = `<p>In dieser Fassung wird nichts gezählt und nichts übertragen.</p>`;
+  if(!messBereit()) zaehlung = `<p>${esc(t("zaehlAus"))}</p>`;
   else zaehlung = `
-      <p>Der Test zählt nur mit, wenn du zugestimmt hast. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 Buchst. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit hier widerrufen.</p>
-      <ul><li><b>Was:</b> welche Halte du startest und schaffst, Punktzahl, Dauer, deine Antworten am Ende, eine zufällige Kennung und gegebenenfalls ein Kürzel dafür, über welchen Link du gekommen bist.</li>
-      <li><b>Was nicht:</b> Name, E-Mail-Adresse, Standort, Eingaben im Token-Feld. Es werden keine Cookies gesetzt.</li>
-      <li><b>Wohin:</b> in eine Google-Tabelle des Anbieters (Google Ireland Limited, Verarbeitung auch in den USA möglich). Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht.</li>
-      <li><b>Wie lange:</b> ${esc(KONFIG.loeschfrist)}.</li></ul>
-      <p><b>Stand:</b> ${fort.zaehlen === "ja" ? "Du zählst anonym mit." : fort.zaehlen === "nein" ? "Du hast die Zählung abgelehnt." : "Du wurdest noch nicht gefragt."}</p>
-      ${fort.id ? `<p class="kennung">Deine Kennung: <b>${esc(fort.id)}</b>. Nenne sie, wenn du deine Daten löschen lassen möchtest.</p>` : ""}
-      ${fort.zaehlen === "ja" ? `<button class="knopf leise" data-akt="zaehlen" data-wert="nein">Zählung ausschalten</button>` : `<button class="knopf leise" data-akt="zaehlen" data-wert="ja">Anonym mitzählen</button>`}`;
+      <p>${esc(t("zaehlP"))}</p>
+      <ul><li>${t("zaehlWas")}</li><li>${t("zaehlNicht")}</li><li>${t("zaehlWohin")}</li><li>${t("zaehlLang")}</li></ul>
+      <p><b>${esc(t("standLabel"))}</b> ${esc(fort.zaehlen === "ja" ? t("standJa") : fort.zaehlen === "nein" ? t("standNein") : t("standOffen"))}</p>
+      ${fort.id ? `<p class="kennung">${t("kennung", {id:`<span dir="ltr">${esc(fort.id)}</span>`})}</p>` : ""}
+      ${fort.zaehlen === "ja" ? `<button class="knopf leise" data-akt="zaehlen" data-wert="nein">${esc(t("zaehlAusBtn"))}</button>` : `<button class="knopf leise" data-akt="zaehlen" data-wert="ja">${esc(t("zaehlAnBtn"))}</button>`}`;
   return `
   <div class="seite">
-    <h2>Impressum und Datenschutz</h2>
-    <section class="kasten"><h3>Anbieter</h3><p>${wer}</p></section>
-    <section class="kasten"><h3>Was beim Aufruf passiert</h3>
-      <p>Die Seite liegt bei GitHub Pages (GitHub Inc., USA). Beim Laden verarbeitet GitHub technisch deine IP-Adresse. Schriften und alle anderen Dateien kommen vom selben Server, es wird nichts von Dritten nachgeladen.</p>
-      <p>Dein Fortschritt und deine Entscheidung zur Zählung werden nur in deinem Browser gespeichert.</p></section>
-    <section class="kasten"><h3>Anonyme Zählung</h3>${zaehlung}</section>
-    <section class="kasten"><h3>Deine Rechte</h3><p>Du kannst Auskunft, Berichtigung und Löschung verlangen und dich bei einer Datenschutz-Aufsichtsbehörde beschweren. Wende dich dafür an den Anbieter.</p></section>
+    <h2>${esc(t("dsH"))}</h2>
+    ${mass ? `<p class="leise">${esc(mass)}</p>` : ""}
+    <section class="kasten"><h3>${esc(t("anbieterH"))}</h3><p>${wer}</p></section>
+    <section class="kasten"><h3>${esc(t("aufrufH"))}</h3><p>${esc(t("aufrufP1"))}</p><p>${esc(t("aufrufP2"))}</p></section>
+    <section class="kasten"><h3>${esc(t("zaehlH"))}</h3>${zaehlung}</section>
+    <section class="kasten"><h3>${esc(t("rechteH"))}</h3><p>${esc(t("rechteP"))}</p></section>
   </div>`;
 }
 
 function einwilligungHTML(){
-  const wer = KONFIG.betreiber.name ? esc(KONFIG.betreiber.name) : "der Anbieter";
+  const wer = KONFIG.betreiber.name ? esc(KONFIG.betreiber.name) : esc(t("derAnbieter"));
   return `
   <div class="lektion">
-    <div class="kopf"><button data-akt="schliessen">Zum Fahrplan</button><span>Vor der Abfahrt</span></div>
+    <div class="kopf"><button data-akt="schliessen">${esc(t("zumFahrplan"))}</button><span>${esc(t("vorAbfahrt"))}</span></div>
     <main class="blatt">
-      <h2>Darf dieser Test anonym mitzählen?</h2>
-      <p>Dieser Kurs ist eine Testfassung. Um ihn zu verbessern, möchte ${wer} wissen, wie weit Menschen kommen und wo sie aussteigen.</p>
-      <section class="kasten"><h3>Was gezählt wird</h3><ul><li>welche Halte du startest und schaffst</li><li>deine Punktzahl und wie lange du brauchst</li><li>deine Antworten auf die Fragen am Ende</li><li>eine zufällige Kennung, damit deine Halte zusammengehören</li></ul></section>
-      <section class="kasten"><h3>Was nicht gezählt wird</h3><ul><li>dein Name, deine E-Mail-Adresse, dein Standort</li><li>was du in Textfelder im Kurs tippst</li></ul></section>
-      <p class="leise">Die Daten landen in einer Google-Tabelle. Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht. Der Kurs funktioniert auch ohne Zählung, und du kannst sie jederzeit unter Datenschutz ausschalten.</p>
+      <h2>${esc(t("einwH"))}</h2>
+      <p>${t("einwP", {wer:wer})}</p>
+      <section class="kasten"><h3>${esc(t("wasH"))}</h3><ul>${t("wasL").map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>
+      <section class="kasten"><h3>${esc(t("nichtH"))}</h3><ul>${t("nichtL").map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>
+      <p class="leise">${esc(t("einwHinweis"))}</p>
     </main>
-    <div class="fuss zwei"><button class="knopf" data-akt="zaehlen" data-wert="ja">Ja, anonym mitzählen</button><button class="knopf leise" data-akt="zaehlen" data-wert="nein">Ohne Zählung starten</button></div>
+    <div class="fuss zwei"><button class="knopf" data-akt="zaehlen" data-wert="ja">${esc(t("einwJa"))}</button><button class="knopf leise" data-akt="zaehlen" data-wert="nein">${esc(t("einwNein"))}</button></div>
   </div>`;
 }
 
 function navHTML(){
-  const namen = {fahrplan:"Fahrplan", glossar:"Glossar", quellen:"Quellen", datenschutz:"Datenschutz"};
-  return `<nav class="nav" aria-label="Bereiche">${ANSICHTEN.map(a => `<a href="#${a}" ${z.ansicht === a ? 'aria-current="page"' : ""}>${namen[a]}</a>`).join("")}</nav>`;
+  const namen = {fahrplan:"navFahrplan", glossar:"navGlossar", quellen:"navQuellen", datenschutz:"navDatenschutz"};
+  return `<nav class="nav" aria-label="${esc(t("navAria"))}">${ANSICHTEN.map(a => `<a href="#${a}" ${z.ansicht === a ? 'aria-current="page"' : ""}>${esc(t(namen[a]))}</a>`).join("")}</nav>`;
 }
 
 /* ---------- Lektion ---------- */
+const BUCHSTABEN = "A-Za-z\\u00C0-\\u024F\\u0600-\\u06FF";
+const RE_TEILE = new RegExp("[" + BUCHSTABEN + "]+|\\d+|[^\\s" + BUCHSTABEN + "\\d]", "g");
+const RE_WORT = new RegExp("^[" + BUCHSTABEN + "]+$");
 function zerlege(text){
-  const teile = text.match(/[A-Za-zÄÖÜäöüß]+|\d+|[^\sA-Za-zÄÖÜäöüß\d]/g) || [];
+  const teile = text.match(RE_TEILE) || [];
   const out = [];
-  for(const t of teile){
-    if(/^[A-Za-zÄÖÜäöüß]+$/.test(t) && t.length > 6){
+  for(const x of teile){
+    if(RE_WORT.test(x) && x.length > 6){
       let i = 0;
-      while(i < t.length){
+      while(i < x.length){
         let n = 4;
-        const rest = t.length - i - 4;
-        if(rest > 0 && rest < 3) n = t.length - i;
-        out.push(t.slice(i, i + n));
+        const rest = x.length - i - 4;
+        if(rest > 0 && rest < 3) n = x.length - i;
+        out.push(x.slice(i, i + n));
         i += n;
       }
-    } else out.push(t);
+    } else out.push(x);
   }
   return out;
 }
 function tokenAusgabe(text){
-  const t = zerlege(text);
-  const chips = t.map(x => `<span>${esc(x)}</span>`).join("");
-  return `<div class="tokens">${chips || '<span class="leise">Schreib etwas in das Feld.</span>'}</div><p class="zaehler">${text.length} Zeichen, ungefähr ${t.length} Tokens</p>`;
+  const x = zerlege(text);
+  const chips = x.map(c => `<span>${esc(c)}</span>`).join("");
+  return `<div class="tokens">${chips || `<span class="leise">${esc(t("tokenLeer"))}</span>`}</div><p class="zaehler">${esc(t("tokenZahl", {z:text.length, t:x.length}))}</p>`;
 }
 
 function schrittHTML(st){
@@ -628,7 +807,7 @@ function schrittHTML(st){
       return `<button class="option ${kl}" data-akt="eimer" data-i="${i}" ${fertig ? "disabled" : ""}>${esc(e)}</button>`;
     }).join("");
     const ok = s.gewaehlt === karte.e;
-    return `<h2>${esc(st.h)}</h2><p class="zaehler">Karte ${k+1} von ${st.karten.length}</p><div class="aussage">${esc(karte.t)}</div><div class="eimer">${eimer}</div>${fertig ? rueckHTML(ok, esc(karte.warum), karte.quelle, ok ? "Richtig." : `Nicht ganz. Die Antwort ist: ${esc(st.eimer[karte.e])}.`) : ""}`;
+    return `<h2>${esc(st.h)}</h2><p class="zaehler">${esc(t("karte", {n:k + 1, m:st.karten.length}))}</p><div class="aussage">${esc(karte.t)}</div><div class="eimer">${eimer}</div>${fertig ? rueckHTML(ok, esc(karte.warum), karte.quelle, ok ? esc(t("richtig")) : esc(t("falschAntwort", {a:st.eimer[karte.e]}))) : ""}`;
   }
   if(st.typ === "vorhersage"){
     const fertig = s.gewaehlt != null;
@@ -638,23 +817,23 @@ function schrittHTML(st){
       else if(fertig && i === s.gewaehlt){ k = "falsch"; zeichen = "✗"; }
       return `<button class="option ${k}" data-akt="antwort" data-i="${i}" ${fertig ? "disabled" : ""}><span class="zeichen" aria-hidden="true">${zeichen}</span><span>${esc(o.w)}</span></button>`;
     }).join("");
-    const balken = fertig ? `<div class="balken" aria-label="So wahrscheinlich wären die Wörter für ein Sprachmodell">${st.optionen.map((o,i) => `<div class="balken-zeile ${i === st.richtig ? "treffer" : ""}"><span>${esc(o.w)}</span><span class="balken-bahn"><i style="width:${Math.max(o.p,1)}%"></i></span><span>${o.p <= 1 ? "unter 1 %" : o.p + " %"}</span></div>`).join("")}</div><p class="quelle">Die Prozentwerte sind ausgedachte Beispiele, keine Messung.</p>` : "";
+    const balken = fertig ? `<div class="balken" aria-label="${esc(t("balkenAria"))}">${st.optionen.map((o,i) => `<div class="balken-zeile ${i === st.richtig ? "treffer" : ""}"><span>${esc(o.w)}</span><span class="balken-bahn"><i style="width:${Math.max(o.p,1)}%"></i></span><span>${esc(o.p <= 1 ? t("unter1") : t("prozent", {n:o.p}))}</span></div>`).join("")}</div><p class="quelle">${esc(t("beispielwerte"))}</p>` : "";
     return `<h2>${esc(st.h)}</h2><p>${esc(st.frage)}</p><p class="satz">${esc(st.satz)} <span class="luecke">${fertig ? esc(st.optionen[st.richtig].w) : "…"}</span></p><div class="optionen">${opts}</div>${fertig ? rueckHTML(s.gewaehlt === st.richtig, esc(st.warum)) + balken : ""}`;
   }
   if(st.typ === "tokens"){
     const text = s.text != null ? s.text : st.start;
-    return `<h2>${esc(st.h)}</h2><label for="token-feld">Schreib einen Satz und sieh, in welche Stücke er ungefähr zerfällt.</label>
-      <textarea class="eingabe" id="token-feld" rows="2" maxlength="160">${esc(text)}</textarea>
+    return `<h2>${esc(st.h)}</h2><label for="token-feld">${esc(t("tokenLabel"))}</label>
+      <textarea class="eingabe" id="token-feld" rows="2" maxlength="160" dir="auto">${esc(text)}</textarea>
       <div id="token-aus" aria-live="polite">${tokenAusgabe(text)}</div>
-      <p class="quelle">Vereinfachte Zerlegung zum Ausprobieren. Echte Modelle teilen Text anders, und jeder Anbieter ein wenig verschieden.</p>`;
+      <p class="quelle">${esc(t("tokenHinweis"))}</p>`;
   }
   if(st.typ === "bauen"){
     const an = s.an || [];
     const chips = st.bausteine.map((b,i) => `<button class="baustein" data-akt="baustein" data-i="${i}" aria-pressed="${an.includes(i)}">${esc(b.name)}</button>`).join("");
     const zusatz = st.bausteine.map((b,i) => an.includes(i) ? ` <mark>${esc(b.text)}</mark>` : "").join("");
     const offen = st.bausteine.filter((b,i) => !an.includes(i)).map(b => b.name);
-    const stand = offen.length ? `Die KI muss noch raten: ${offen.join(", ")}.` : "Jetzt muss die KI nichts mehr raten.";
-    return `<h2>${esc(st.h)}</h2><p>${esc(st.intro)}</p><div class="bausteine">${chips}</div><p class="prompt">${esc(st.basis)}${zusatz}</p><p class="${offen.length ? "zaehler" : "merke"}" role="status">${stand}</p>`;
+    const stand = offen.length ? t("ratenNoch", {liste:offen.join(z.l === "ar" ? "، " : ", ")}) : t("ratenNichts");
+    return `<h2>${esc(st.h)}</h2><p>${esc(st.intro)}</p><div class="bausteine">${chips}</div><p class="prompt">${esc(st.basis)}${zusatz}</p><p class="${offen.length ? "zaehler" : "merke"}" role="status">${esc(stand)}</p>`;
   }
   return "";
 }
@@ -665,21 +844,21 @@ function kannWeiter(st){
   return true;
 }
 function weiterText(h, st){
-  if(st.typ === "sortieren" && (z.s.karte || 0) < st.karten.length - 1) return "Nächste Karte";
-  if(z.schritt === h.schritte.length - 1) return "Halt abschließen";
-  return "Weiter";
+  if(st.typ === "sortieren" && (z.s.karte || 0) < st.karten.length - 1) return t("naechsteKarte");
+  if(z.schritt === h.schritte.length - 1) return t("abschliessen");
+  return t("weiter");
 }
 
 function lektionHTML(){
-  const h = HALTE[z.halt];
+  const h = halte()[z.halt];
   if(z.ende) return endeHTML(h);
   const st = h.schritte[z.schritt];
   return `
   <div class="lektion">
-    <div class="kopf"><button data-akt="schliessen">Zum Fahrplan</button><span>Halt ${z.halt + 1} von ${HALTE.length}</span></div>
-    <div class="schritte" role="progressbar" aria-label="Fortschritt in diesem Halt" aria-valuemin="0" aria-valuemax="${h.schritte.length}" aria-valuenow="${z.schritt}">${h.schritte.map((_,i) => `<i class="${i <= z.schritt ? "war" : ""}"></i>`).join("")}</div>
+    <div class="kopf"><button data-akt="schliessen">${esc(t("zumFahrplan"))}</button><span>${esc(t("haltVon", {n:z.halt + 1, m:HALTE.length}))}</span></div>
+    <div class="schritte" role="progressbar" aria-label="${esc(t("fortschrittAria"))}" aria-valuemin="0" aria-valuemax="${h.schritte.length}" aria-valuenow="${z.schritt}">${h.schritte.map((_,i) => `<i class="${i <= z.schritt ? "war" : ""}"></i>`).join("")}</div>
     <main class="blatt" id="blatt">${schrittHTML(st)}</main>
-    <div class="fuss"><button class="knopf" data-akt="weiter" ${kannWeiter(st) ? "" : "disabled"}>${weiterText(h, st)}</button></div>
+    <div class="fuss"><button class="knopf" data-akt="weiter" ${kannWeiter(st) ? "" : "disabled"}>${esc(weiterText(h, st))}</button></div>
   </div>`;
 }
 
@@ -688,14 +867,14 @@ function endeHTML(h){
   const letzter = z.halt === HALTE.length - 1;
   return `
   <div class="lektion">
-    <div class="kopf"><button data-akt="schliessen">Zum Fahrplan</button><span>Halt ${z.halt + 1} von ${HALTE.length}</span></div>
+    <div class="kopf"><button data-akt="schliessen">${esc(t("zumFahrplan"))}</button><span>${esc(t("haltVon", {n:z.halt + 1, m:HALTE.length}))}</span></div>
     <div class="schritte">${h.schritte.map(() => `<i class="war"></i>`).join("")}</div>
     <main class="blatt">
-      <h2>Halt ${z.halt + 1} geschafft</h2>
-      ${z.lauf.gesamt ? `<p>Du hast ${z.lauf.richtig} von ${z.lauf.gesamt} Aufgaben richtig gelöst.${e && e.richtig > z.lauf.richtig ? ` Dein bestes Ergebnis hier: ${e.richtig}.` : ""}</p>` : ""}
-      <section class="kasten"><h3>Das nimmst du mit</h3><ul>${h.mitnehmen.map(m => `<li>${esc(m)}</li>`).join("")}</ul></section>
+      <h2>${esc(t("haltGeschafft", {n:z.halt + 1}))}</h2>
+      ${z.lauf.gesamt ? `<p>${esc(t("ergebnis", {r:z.lauf.richtig, g:z.lauf.gesamt}))}${e && e.richtig > z.lauf.richtig ? " " + esc(t("bestes", {r:e.richtig})) : ""}</p>` : ""}
+      <section class="kasten"><h3>${esc(t("mitnehmen"))}</h3><ul>${h.mitnehmen.map(m => `<li>${esc(m)}</li>`).join("")}</ul></section>
     </main>
-    <div class="fuss"><button class="knopf" data-akt="${letzter ? "schliessen" : "naechster"}">${letzter ? "Zur Fahrkarte" : `Weiter zu Halt ${z.halt + 2}`}</button></div>
+    <div class="fuss"><button class="knopf" data-akt="${letzter ? "schliessen" : "naechster"}">${esc(letzter ? t("zurFahrkarte") : t("weiterZu", {n:z.halt + 2}))}</button></div>
   </div>`;
 }
 
@@ -726,8 +905,8 @@ function heute(off){ const d = new Date(); d.setDate(d.getDate() + (off || 0)); 
 function schliesseHaltAb(){
   const h = HALTE[z.halt], alt = fort.erledigt[h.id];
   if(!alt || z.lauf.richtig >= alt.richtig) fort.erledigt[h.id] = {richtig:z.lauf.richtig, gesamt:z.lauf.gesamt};
-  const t = heute();
-  if(fort.letzterTag !== t){ fort.tage = fort.letzterTag === heute(-1) ? (fort.tage || 0) + 1 : 1; fort.letzterTag = t; }
+  const tag = heute();
+  if(fort.letzterTag !== tag){ fort.tage = fort.letzterTag === heute(-1) ? (fort.tage || 0) + 1 : 1; fort.letzterTag = tag; }
   const sek = z.startzeit ? Math.min(36000, Math.round((Date.now() - z.startzeit) / 1000)) : 0;
   melde("halt_fertig", {h:z.halt + 1, r:z.lauf.richtig, g:z.lauf.gesamt, s:sek});
   if(alleErledigt() && !fort.gemeldet.kurs){
@@ -740,9 +919,11 @@ function schliesseHaltAb(){
 app.addEventListener("click", ev => {
   const el = ev.target.closest("[data-akt]"); if(!el) return;
   const akt = el.dataset.akt;
-  const h = z.halt !== null ? HALTE[z.halt] : null;
+  const h = z.halt !== null ? halte()[z.halt] : null;
   const st = h && !z.ende ? h.schritte[z.schritt] : null;
   if(akt === "start"){ starteHalt(+el.dataset.halt); }
+  else if(akt === "sprache"){ setzeSprache(el.dataset.l, true); z.kopiert = ""; zeichne(); const b = app.querySelector(`.sprachen [data-l="${z.l}"]`); if(b) b.focus(); }
+  else if(akt === "installieren"){ if(installEreignis){ try{ installEreignis.prompt(); }catch(e){} installEreignis = null; el.hidden = true; } }
   else if(akt === "schliessen"){ z.halt = null; z.frage = null; z.ende = false; z.ansicht = "fahrplan"; zeichne(true); }
   else if(akt === "zaehlen"){
     setzeZaehlung(el.dataset.wert);
@@ -753,8 +934,8 @@ app.addEventListener("click", ev => {
     else { melde("feedback", {verst:+fort.rueck.verst, weiter:fort.rueck.weiter, text:z.rueckText.slice(0, 400)}); z.kopiert = "gesendet"; zeichne(); }
   }
   else if(akt === "naechster"){ starteHalt(z.halt + 1); }
-  else if(akt === "antwort" && st && z.s.gewaehlt == null){ z.s.gewaehlt = +el.dataset.i; werte(z.s.gewaehlt === st.richtig); zeichne(); fokusWeiter(); }
-  else if(akt === "eimer" && st && !z.s.beantwortet){ z.s.gewaehlt = +el.dataset.i; z.s.beantwortet = true; werte(z.s.gewaehlt === st.karten[z.s.karte || 0].e); zeichne(); fokusWeiter(); }
+  else if(akt === "antwort" && st && z.s.gewaehlt == null){ z.s.gewaehlt = +el.dataset.i; werte(z.s.gewaehlt === st.richtig); zeichne(); zeigeRueck(); }
+  else if(akt === "eimer" && st && !z.s.beantwortet){ z.s.gewaehlt = +el.dataset.i; z.s.beantwortet = true; werte(z.s.gewaehlt === st.karten[z.s.karte || 0].e); zeichne(); zeigeRueck(); }
   else if(akt === "baustein" && st){ const i = +el.dataset.i; const an = z.s.an || []; z.s.an = an.includes(i) ? an.filter(x => x !== i) : an.concat(i); zeichne(); const b = app.querySelector(`.baustein[data-i="${i}"]`); if(b) b.focus(); }
   else if(akt === "weiter" && st && kannWeiter(st)){
     if(st.typ === "sortieren" && (z.s.karte || 0) < st.karten.length - 1){ z.s = {karte:(z.s.karte || 0) + 1}; zeichne(true); }
@@ -769,10 +950,10 @@ app.addEventListener("click", ev => {
   }
   else if(akt === "zuruecksetzen"){
     if(!z.zurueck){ z.zurueck = true; zeichne(); }
-    else { fort = {erledigt:{}, tage:0, letzterTag:null, rueck:{}, zaehlen:fort.zaehlen, id:fort.id, q:fort.q, gemeldet:fort.gemeldet}; sichern(); z.zurueck = false; location.hash = "fahrplan"; z.ansicht = "fahrplan"; zeichne(true); }
+    else { fort = {erledigt:{}, tage:0, letzterTag:null, rueck:{}, zaehlen:fort.zaehlen, id:fort.id, q:fort.q, gemeldet:fort.gemeldet, l:fort.l}; sichern(); z.zurueck = false; location.hash = "fahrplan"; z.ansicht = "fahrplan"; zeichne(true); }
   }
 });
-function fokusWeiter(){ const r = app.querySelector(".rueck"); if(r && r.scrollIntoView) r.scrollIntoView({block:"nearest", behavior:"smooth"}); }
+function zeigeRueck(){ const r = app.querySelector(".rueck"); if(r && r.scrollIntoView) r.scrollIntoView({block:"nearest", behavior:"smooth"}); }
 
 app.addEventListener("input", ev => {
   if(ev.target.id === "rueck-text"){ z.rueckText = ev.target.value; }
@@ -788,6 +969,7 @@ function ausHash(){ const a = location.hash.replace("#",""); return ANSICHTEN.in
 window.addEventListener("hashchange", () => { z.ansicht = ausHash(); z.halt = null; z.frage = null; z.ende = false; z.zurueck = false; zeichne(true); });
 
 function start(d){
+  setzeSprache(startSprache(), false);
   z.ansicht = ausHash();
   if(d && typeof d.halt === "number" && HALTE[d.halt]){ z.halt = d.halt; z.schritt = Math.min(d.schritt || 0, HALTE[d.halt].schritte.length - 1); z.lauf = d.lauf || {richtig:0, gesamt:0}; }
   zeichne();

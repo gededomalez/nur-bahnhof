@@ -1,21 +1,25 @@
 # Nur Bahnhof
 
-Ein KI-Grundkurs als Web-App: sechs kurze Etappen mit Quiz, Sortierkarten und Mini-Spielen, dazu Glossar und Quellenliste. Die App ist eine Testfassung und kann mit Einwilligung der Teilnehmenden anonym mitzählen, wie weit sie kommen.
+Ein KI-Grundkurs als Web-App in vier Sprachen (Deutsch, Englisch, Spanisch, Arabisch): sechs kurze Etappen mit Quiz, Sortierkarten und Mini-Spielen, dazu Glossar und Quellenliste. Die App ist eine Testfassung und kann mit Einwilligung der Teilnehmenden anonym mitzählen, wie weit sie kommen.
+
+Live: https://gededomalez.github.io/nur-bahnhof/
 
 ## Aufbau
 
 | Datei | Zweck |
 |---|---|
-| `index.html` | Die ganze App: Inhalte, Gestaltung und Ablauf in einer Datei |
+| `index.html` | Die App: Gestaltung, Ablauf und alle deutschen Texte |
+| `texte-en.js`, `texte-es.js`, `texte-ar.js` | Die Übersetzungen. Aufbau und Reihenfolge müssen zu den deutschen Lektionen passen |
+| `manifest.json`, `icon-*.png`, `apple-touch-icon.png` | Damit sich die App auf den Home-Bildschirm legen lässt |
 | `*.woff2` | Die beiden Schriften als lokale Dateien, damit nichts von Dritten nachgeladen wird |
 | `Code.gs` | Skript für die Google-Tabelle, die die Messdaten sammelt |
 
 ## Vor dem Teilen
 
-1. Tabelle einrichten (siehe unten) und die Adresse in `index.html` bei `messUrl` eintragen.
+1. Die Tabelle ist eingerichtet und bei `messUrl` eingetragen. Wie das ging, steht unten.
 2. In `index.html` bei `betreiber` Name, Anschrift und E-Mail-Adresse für das Impressum eintragen.
 3. Den Text unter „Datenschutz“ in der App prüfen lassen. Er ist ein Entwurf und keine Rechtsberatung.
-4. Alle Inhalte einmal von einem Menschen gegenlesen lassen.
+4. Alle Inhalte einmal von einem Menschen gegenlesen lassen. Das gilt besonders für die Übersetzungen: Sie wurden mit KI erstellt und brauchen je eine Person, die die Sprache als Muttersprache spricht.
 
 Solange `messUrl` leer ist, zählt die App nichts und fragt auch nicht nach einer Einwilligung.
 
@@ -39,7 +43,7 @@ Nur nach einem Ja auf die Einwilligungsfrage, und nie mit Namen:
 
 | Ereignis | Wann | Zusatzangaben |
 |---|---|---|
-| `start` | direkt nach dem Ja | Link-Kürzel |
+| `start` | direkt nach dem Ja | Link-Kürzel, Sprache |
 | `halt_start` | ein Halt wird begonnen | Nummer des Halts |
 | `halt_fertig` | ein Halt wird abgeschlossen | richtige Aufgaben, Aufgaben gesamt, Sekunden |
 | `kurs_fertig` | zum ersten Mal sind alle Halte geschafft | Gesamtpunkte |
@@ -48,6 +52,17 @@ Nur nach einem Ja auf die Einwilligungsfrage, und nie mit Namen:
 Jede Zeile trägt eine zufällige Kennung, die im Browser der Person entsteht. Wer Nein sagt, taucht in der Tabelle nicht auf. Die Auswertung kennt deshalb nur die Menschen, die zugestimmt haben.
 
 Das Blatt „Auswertung“ rechnet bei jedem neuen Ereignis neu: Gestartete, geschaffte Halte mit Anteil, Abschlussquote, Wiederkehrer, Trefferquote und Dauer je Halt, Rückmeldungen und eine Aufteilung nach Link-Kürzel.
+
+## Sprachen
+
+Die App wählt die Sprache in dieser Reihenfolge: die eigene Wahl über die Knöpfe oben, dann `?l=` im Link, dann die Sprache des Browsers, sonst Deutsch.
+
+```
+https://gededomalez.github.io/nur-bahnhof/?l=ar
+https://gededomalez.github.io/nur-bahnhof/?l=es&q=verein
+```
+
+Arabisch wird von rechts nach links gesetzt. Wer einen deutschen Text ändert, muss dieselbe Stelle in den drei `texte-*.js` nachziehen. In der Tabelle steht die Sprache in einer eigenen Spalte, die Auswertung zeigt Gestartete und Abschlüsse je Sprache.
 
 ## Kanäle vergleichen
 
@@ -72,4 +87,4 @@ Alle Lektionen stehen in `index.html` in der Liste `HALTE`, die Quellen in `Q`, 
 
 ## Schriften
 
-Atkinson Hyperlegible (Braille Institute of America) und Barlow Condensed (The Barlow Project Authors), beide unter der SIL Open Font License 1.1. Die Lizenztexte liegen in den beiden `LICENSE-…`-Dateien.
+Atkinson Hyperlegible (Braille Institute of America), Barlow Condensed (The Barlow Project Authors) und Noto Sans Arabic (The Noto Project Authors), alle unter der SIL Open Font License 1.1. Die Lizenztexte liegen in den `LICENSE-…`-Dateien.
