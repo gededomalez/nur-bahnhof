@@ -7,8 +7,8 @@ Ein KI-Grundkurs als Web-App: sechs kurze Etappen mit Quiz, Sortierkarten und Mi
 | Datei | Zweck |
 |---|---|
 | `index.html` | Die ganze App: Inhalte, Gestaltung und Ablauf in einer Datei |
-| `fonts/` | Die beiden Schriften als lokale Dateien, damit nichts von Dritten nachgeladen wird |
-| `apps-script/Code.gs` | Skript für die Google-Tabelle, die die Messdaten sammelt |
+| `*.woff2` | Die beiden Schriften als lokale Dateien, damit nichts von Dritten nachgeladen wird |
+| `Code.gs` | Skript für die Google-Tabelle, die die Messdaten sammelt |
 
 ## Vor dem Teilen
 
@@ -25,7 +25,7 @@ Das dauert etwa zehn Minuten und geht am besten am Computer.
 
 1. Lege unter [sheets.new](https://sheets.new) eine neue Google-Tabelle an und gib ihr einen Namen, zum Beispiel „Nur Bahnhof Messung“.
 2. Öffne in der Tabelle **Erweiterungen → Apps Script**.
-3. Lösche den Beispielcode und füge den gesamten Inhalt von `apps-script/Code.gs` ein. Speichere.
+3. Lösche den Beispielcode und füge den gesamten Inhalt von `Code.gs` ein. Speichere.
 4. Wähle oben die Funktion `einrichten` und klicke auf **Ausführen**. Google fragt einmal nach der Berechtigung für diese Tabelle. Danach gibt es die Blätter „Ereignisse“ und „Auswertung“.
 5. Klicke auf **Bereitstellen → Neue Bereitstellung**, wähle als Typ **Web-App**, bei „Ausführen als“ dich selbst und bei „Zugriff“ **Jeder**. Bestätige.
 6. Kopiere die angezeigte Web-App-Adresse. Sie endet auf `/exec`. Wenn du sie im Browser öffnest, erscheint „Nur Bahnhof: Die Messung läuft.“
@@ -72,4 +72,4 @@ Alle Lektionen stehen in `index.html` in der Liste `HALTE`, die Quellen in `Q`, 
 
 ## Schriften
 
-Atkinson Hyperlegible (Braille Institute of America) und Barlow Condensed (The Barlow Project Authors), beide unter der SIL Open Font License 1.1. Die Lizenztexte liegen im Ordner `fonts/`.
+Atkinson Hyperlegible (Braille Institute of America) und Barlow Condensed (The Barlow Project Authors), beide unter der SIL Open Font License 1.1. Die Lizenztexte liegen in den beiden `LICENSE-…`-Dateien.
