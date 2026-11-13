@@ -12,8 +12,9 @@
 
 const BLATT_EREIGNISSE = 'Ereignisse';
 const BLATT_AUSWERTUNG = 'Auswertung';
-const KOPF = ['Zeit', 'Kennung', 'Quelle', 'Ereignis', 'Halt', 'Richtig', 'Gesamt', 'Sekunden', 'Verständlich', 'Weitermachen', 'Freitext', 'Version'];
+const KOPF = ['Zeit', 'Kennung', 'Quelle', 'Ereignis', 'Halt', 'Richtig', 'Gesamt', 'Sekunden', 'Verständlich', 'Weitermachen', 'Freitext', 'Version', 'Sprache'];
 const ERLAUBT = ['start', 'halt_start', 'halt_fertig', 'kurs_fertig', 'feedback'];
+const SPRACHEN = ['de', 'en', 'es', 'ar'];
 const ANZAHL_HALTE = 6;
 const MAX_ZEILEN = 20000;
 
@@ -87,12 +88,13 @@ function pruefe(d, jetzt) {
   const quelle = typeof d.q === 'string' ? d.q.replace(/[^a-z0-9-]/gi, '').slice(0, 24).toLowerCase() : '';
   const version = typeof d.v === 'string' && /^[0-9.]{1,8}$/.test(d.v) ? d.v : '';
   const weiter = ['Ja', 'Vielleicht', 'Nein'].indexOf(d.weiter) >= 0 ? d.weiter : '';
+  const sprache = SPRACHEN.indexOf(d.l) >= 0 ? d.l : '';
   let text = typeof d.text === 'string' ? d.text.replace(/[\u0000-\u001f]+/g, ' ').trim().slice(0, 400) : '';
   if (/^[=+\-@]/.test(text)) text = "'" + text; // nie als Formel auswerten
   return [
     jetzt, d.id, quelle, d.e,
     zahl(d.h, 1, ANZAHL_HALTE), zahl(d.r, 0, 99), zahl(d.g, 0, 99), zahl(d.s, 0, 36000),
-    zahl(d.verst, 1, 5), weiter, text, version
+    zahl(d.verst, 1, 5), weiter, text, version, sprache
   ];
 }
 
@@ -120,6 +122,7 @@ function berechne(zeilen, jetzt) {
   for (let h = 0; h < ANZAHL_HALTE; h++) geschafft.push({});
   const tage = {};               // Kennung -> {Tag: true}
   const quelleVon = {};          // Kennung -> Quelle
+  const spracheVon = {};         // Kennung -> zuletzt genutzte Sprache
   const feedback = {};           // Kennung -> {verst, weiter}
   let freitexte = 0;
 
@@ -128,6 +131,7 @@ function berechne(zeilen, jetzt) {
     if (!id) return;
     gestartet[id] = true;
     if (!(id in quelleVon)) quelleVon[id] = q || '(ohne Kürzel)';
+    if (z[12]) spracheVon[id] = z[12];
     const tag = zeit instanceof Date ? zeit.getFullYear() + '-' + (zeit.getMonth() + 1) + '-' + zeit.getDate() : String(zeit).slice(0, 10);
     if (!tage[id]) tage[id] = {};
     tage[id][tag] = true;
@@ -199,6 +203,17 @@ function berechne(zeilen, jetzt) {
   aus.push(['', '', '']);
   aus.push(['Nach Link-Kürzel', 'Gestartet', 'Alle Halte geschafft']);
   Object.keys(jeQuelle).sort().forEach(function (q) { aus.push([q, jeQuelle[q].start, jeQuelle[q].komplett]); });
+
+  const jeSprache = {};
+  ids.forEach(function (id) {
+    const l = spracheVon[id] || '(unbekannt)';
+    if (!jeSprache[l]) jeSprache[l] = { start: 0, komplett: 0 };
+    jeSprache[l].start++;
+  });
+  komplett.forEach(function (id) { jeSprache[spracheVon[id] || '(unbekannt)'].komplett++; });
+  aus.push(['', '', '']);
+  aus.push(['Nach Sprache', 'Gestartet', 'Alle Halte geschafft']);
+  Object.keys(jeSprache).sort().forEach(function (l) { aus.push([l, jeSprache[l].start, jeSprache[l].komplett]); });
 
   return aus;
 }
