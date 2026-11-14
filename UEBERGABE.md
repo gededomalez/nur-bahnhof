@@ -50,7 +50,7 @@ Schritt-Typen in `HALTE`: `text`, `quiz`, `sortieren` (zwei oder drei Eimer), `v
 ## Offen
 
 - **Übersetzungen** sind mit KI entstanden und nicht von Muttersprachlern gegengelesen. Am wichtigsten sind Arabisch, Türkisch und Ukrainisch.
-- **Datenschutztext und Impressum** sind Entwürfe ohne rechtliche Prüfung. Als Anbieter steht auf Gideons Wunsch nur „Sound&Sun“. Ein Einzelunternehmen muss im Impressum in der Regel auch den Namen des Inhabers nennen, das ist nicht geklärt.
+- **Datenschutztext und Impressum** sind Entwürfe ohne rechtliche Prüfung. Als Anbieter steht „Sound&Sun, Inhaber: Gideon Morales“.
 - **Auf echten Handys** wurde bisher nur von Gideon getestet. Das Hinzufügen zum Home-Bildschirm ist auf iPhone und Android ungeprüft.
 - **Die EBU-Studie** stammt von 2025. Sobald es eine Wiederholung mit neueren Modellen gibt, Halt 3 anpassen.
 - **Schalternamen in Halt 5** („Das Modell für alle verbessern“) ändern sich bei den Anbietern oft. Bei jeder größeren Überarbeitung nachsehen.
