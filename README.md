@@ -53,6 +53,8 @@ Nur nach einem Ja auf die Einwilligungsfrage, und nie mit Namen:
 
 Jede Zeile trägt eine zufällige Kennung, die im Browser der Person entsteht. Wer Nein sagt, taucht in der Tabelle nicht auf. Die Auswertung kennt deshalb nur die Menschen, die zugestimmt haben.
 
+Vor einem echten Test die eigenen Probeläufe entfernen: In der Tabelle im Menü **Nur Bahnhof → Zählung neu starten** wählen. Die bisherigen Zeilen wandern in ein Archiv-Blatt, die Zählung beginnt bei null. Das Menü gibt es nur am Computer, nicht in der Handy-App von Google Sheets.
+
 Das Blatt „Auswertung“ rechnet bei jedem neuen Ereignis neu: Gestartete, geschaffte Halte mit Anteil, Abschlussquote, Wiederkehrer, Trefferquote und Dauer je Halt, Rückmeldungen und eine Aufteilung nach Link-Kürzel.
 
 ## Sprachen

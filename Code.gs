@@ -28,7 +28,31 @@ function einrichten() {
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('Nur Bahnhof')
     .addItem('Auswertung aktualisieren', 'auswerten')
+    .addItem('Zählung neu starten (Zeilen ins Archiv)', 'neuStarten')
     .addToUi();
+}
+
+/** Menüpunkt: verschiebt alle bisherigen Zeilen in ein Archiv-Blatt und beginnt die Zählung bei null. */
+function neuStarten() {
+  const ui = SpreadsheetApp.getUi();
+  const mappe = SpreadsheetApp.getActiveSpreadsheet();
+  const blatt = ereignisBlatt_();
+  const n = blatt.getLastRow() - 1;
+  if (n < 1) { ui.alert('Es gibt keine Zeilen. Die Zählung ist schon leer.'); return; }
+  const frage = ui.alert('Zählung neu starten?', n + ' Zeilen werden in ein Archiv-Blatt verschoben. Danach beginnt die Zählung bei null.', ui.ButtonSet.OK_CANCEL);
+  if (frage !== ui.Button.OK) return;
+  const sperre = LockService.getScriptLock();
+  sperre.waitLock(10000);
+  let name;
+  try {
+    name = 'Archiv ' + Utilities.formatDate(new Date(), mappe.getSpreadsheetTimeZone(), 'yyyy-MM-dd HH.mm.ss');
+    blatt.copyTo(mappe).setName(name);
+    blatt.getRange(2, 1, blatt.getLastRow() - 1, blatt.getLastColumn()).clearContent();
+    auswerten();
+  } finally {
+    sperre.releaseLock();
+  }
+  ui.alert(n + ' Zeilen liegen jetzt im Blatt „' + name + '“. Die Zählung ist leer.');
 }
 
 /** Die App schickt jedes Ereignis als JSON-Text hierher. */
