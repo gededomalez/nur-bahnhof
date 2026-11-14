@@ -17,6 +17,15 @@
 @font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-style:normal;font-display:swap;src:url("atkinson-hyperlegible-latin-700-normal.woff2") format("woff2")}
 @font-face{font-family:"Barlow Condensed";font-weight:600;font-style:normal;font-display:swap;src:url("barlow-condensed-latin-600-normal.woff2") format("woff2")}
 @font-face{font-family:"Barlow Condensed";font-weight:700;font-style:normal;font-display:swap;src:url("barlow-condensed-latin-700-normal.woff2") format("woff2")}
+/* Türkische und andere erweiterte lateinische Zeichen */
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:400;font-style:normal;font-display:swap;src:url("atkinson-hyperlegible-latin-ext-400-normal.woff2") format("woff2");unicode-range:U+0100-024F,U+1E00-1EFF}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-style:normal;font-display:swap;src:url("atkinson-hyperlegible-latin-ext-700-normal.woff2") format("woff2");unicode-range:U+0100-024F,U+1E00-1EFF}
+@font-face{font-family:"Barlow Condensed";font-weight:600;font-style:normal;font-display:swap;src:url("barlow-condensed-latin-ext-600-normal.woff2") format("woff2");unicode-range:U+0100-024F,U+1E00-1EFF}
+@font-face{font-family:"Barlow Condensed";font-weight:700;font-style:normal;font-display:swap;src:url("barlow-condensed-latin-ext-700-normal.woff2") format("woff2");unicode-range:U+0100-024F,U+1E00-1EFF}
+/* Kyrillisch für Ukrainisch */
+@font-face{font-family:"Noto Sans";font-weight:400;font-style:normal;font-display:swap;src:url("noto-sans-cyrillic-400-normal.woff2") format("woff2");unicode-range:U+0400-052F,U+2116}
+@font-face{font-family:"Noto Sans";font-weight:700;font-style:normal;font-display:swap;src:url("noto-sans-cyrillic-700-normal.woff2") format("woff2");unicode-range:U+0400-052F,U+2116}
+@font-face{font-family:"Roboto Condensed";font-weight:600 700;font-style:normal;font-display:swap;src:url("roboto-condensed-cyrillic-700-normal.woff2") format("woff2");unicode-range:U+0400-052F,U+2116}
 /* Arabische Schrift: wird nur geladen, wenn arabische Zeichen auf der Seite stehen */
 @font-face{font-family:"Noto Sans Arabic";font-weight:400;font-style:normal;font-display:swap;src:url("noto-sans-arabic-arabic-400-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF}
 @font-face{font-family:"Noto Sans Arabic";font-weight:700;font-style:normal;font-display:swap;src:url("noto-sans-arabic-arabic-700-normal.woff2") format("woff2");unicode-range:U+0600-06FF,U+0750-077F,U+FB50-FDFF,U+FE70-FEFF}
@@ -37,8 +46,8 @@
   --vorsicht:#8A5200;
   --fahrt-flaeche:#E3F3E9;
   --halt-flaeche:#FBE8E5;
-  --display:"Barlow Condensed","Noto Sans Arabic","Arial Narrow",Arial,sans-serif;
-  --text:"Atkinson Hyperlegible","Noto Sans Arabic",Verdana,Tahoma,sans-serif;
+  --display:"Barlow Condensed","Noto Sans Arabic","Roboto Condensed","Arial Narrow",Arial,sans-serif;
+  --text:"Atkinson Hyperlegible","Noto Sans Arabic","Noto Sans",Verdana,Tahoma,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){
@@ -295,12 +304,14 @@ button{font:inherit;color:inherit;cursor:pointer}
 <script src="texte-en.js"></script>
 <script src="texte-es.js"></script>
 <script src="texte-ar.js"></script>
+<script src="texte-tr.js"></script>
+<script src="texte-uk.js"></script>
 <script>
 /* ---------- Einstellungen: vor dem Teilen ausfüllen ---------- */
 const KONFIG = {
   messUrl: "https://script.google.com/macros/s/AKfycbxyrRUAWNNcFouqQuthr1X44a2VzrpvPBlFxKTQsqC64G0AYvOUuKA52fCpByR0ruU/exec",   // Web-App-Adresse des Google-Skripts. Leer heißt: es wird nichts gezählt.
-  version: "0.4",
-  betreiber: { name: "Gideon Morales", anschrift: "Hehnen 9\n88267 Vogt", mail: "gideon@soundandsun.de" }   // Angaben für Impressum und Datenschutzhinweis
+  version: "0.5",
+  betreiber: { name: "Sound&Sun", anschrift: "Hehnen 9\n88267 Vogt", mail: "gideon@soundandsun.de" }   // Angaben für Impressum und Datenschutzhinweis
 };
 
 /* ---------- Quellen ---------- */
@@ -346,7 +357,7 @@ const HALTE = [
       {t:"Film-Vorschläge beim Streaming", e:0, warum:"Das System lernt aus dem, was du und andere geschaut haben."}
     ]},
     {typ:"quiz", frage:"Seit wann gibt es den Begriff „Künstliche Intelligenz“?", optionen:["1956","1989","2007","2022"], richtig:0, warum:"Der Begriff stammt von einer Forschertagung im Jahr 1956 in den USA. Neu ist seit Ende 2022 nur, dass mit ChatGPT jeder so ein System selbst ausprobieren kann."},
-    {typ:"text", h:"Was an ChatGPT und Co. neu ist", html:"<p>Die meisten KI-Systeme sortieren etwas oder sagen etwas vorher. Generative KI erzeugt etwas Neues: Texte, Bilder, Musik, Videos.</p><p>ChatGPT, Gemini, Copilot oder Claude sind Chatbots. In ihnen steckt ein Sprachmodell, das auf Text spezialisiert ist. Wie das arbeitet, siehst du am nächsten Halt.</p>"},
+    {typ:"text", h:"Was an ChatGPT und Co. neu ist", html:"<p>Die meisten KI-Systeme sortieren etwas oder sagen etwas vorher. Generative KI erzeugt etwas Neues: Texte, Bilder, Musik, Videos.</p><p>ChatGPT, Gemini, Copilot oder Claude sind Chatbots. In ihnen steckt ein Sprachmodell, das auf Text spezialisiert ist. Wie das arbeitet, siehst du an der nächsten Station.</p>"},
     {typ:"quiz", frage:"Was unterscheidet ein KI-System von einem normalen Programm?", optionen:["Es hat seine Regeln aus Beispielen gelernt","Es läuft nur auf besonders schnellen Computern","Es hat ein eigenes Bewusstsein","Es ist immer mit dem Internet verbunden"], richtig:0, warum:"Das Lernen aus Beispielen ist der Kern. Schnelle Rechner helfen dabei, sind aber nicht der Unterschied. Ein Bewusstsein hat keines dieser Systeme nachweislich."}
   ]
 },
@@ -468,26 +479,26 @@ const GLOSSAR = [
   ["Wissensstand","Der Stichtag, bis zu dem die Trainingstexte eines Modells reichen. Was danach geschah, kennt es nur, wenn es im Internet suchen kann."]
 ];
 
-/* ---------- Texte der Oberfläche auf Deutsch. Übersetzungen: texte-en.js, texte-es.js, texte-ar.js ---------- */
+/* ---------- Texte der Oberfläche auf Deutsch. Übersetzungen: texte-en.js, texte-es.js, texte-ar.js, texte-tr.js, texte-uk.js ---------- */
 const UI_DE = {
   appTitel:"KI-Kurs Nur Bahnhof",
   titel:"Bei KI nur Bahnhof?",
-  untertitel:"Sechs Halte, zusammen rund eine halbe Stunde. Danach weißt du, wovon alle reden und worauf du achten musst.",
-  stand:"{n} von {m} Halten geschafft.",
+  untertitel:"Sechs Stationen, zusammen rund eine halbe Stunde. Danach weißt du, wovon alle reden und worauf du achten musst.",
+  stand:"{n} von {m} Stationen geschafft.",
   tage:"Du bist {n} Tage in Folge dabei.",
-  losfahren:"Losfahren", nochmal:"Noch einmal ab Halt 1", weiterMit:"Weiter mit Halt {n}",
-  fahrplan:"Fahrplan", fahrplanSpalten:"Halt, Thema, Dauer",
+  losfahren:"Losfahren", nochmal:"Noch einmal ab Station 1", weiterMit:"Weiter mit Station {n}",
+  fahrplan:"Fahrplan", fahrplanSpalten:"Station, Thema, Dauer",
   min:"{n} Min", offen:"offen", geschafft:"geschafft", vonRichtig:"{r} von {g}",
-  haltAria:"Halt {n}: {titel}, {min} Minuten, {stand}",
+  haltAria:"Station {n}: {titel}, {min} Minuten, {stand}",
   quelleKastenH:"Jede Zahl hat eine Quelle",
   quelleKastenP:"Bei jeder Angabe in diesem Kurs steht, woher sie stammt. Die ganze Liste findest du unter Quellen. Begriffe zum Nachschlagen stehen im Glossar.",
   navFahrplan:"Fahrplan", navGlossar:"Glossar", navQuellen:"Quellen", navDatenschutz:"Datenschutz", navAria:"Bereiche",
   sprache:"Sprache",
   instSum:"Als App auf den Home-Bildschirm legen", instJetzt:"Jetzt installieren",
-  fahrkarteH:"Fahrkarte KI-Grundlagen", fahrkarteSub:"Alle sechs Halte geschafft", fahrkarteAria:"Deine Fahrkarte",
+  fahrkarteH:"Fahrkarte KI-Grundlagen", fahrkarteSub:"Alle sechs Stationen geschafft", fahrkarteAria:"Deine Fahrkarte",
   fahrkarteP:"Das ist eine Testfassung. Deine Antworten helfen, den Kurs besser zu machen.",
   fVerst:"<b>Wie verständlich war der Kurs?</b> 1 heißt gar nicht, 5 heißt sehr.",
-  fWeiter:"<b>Würdest du weitere Halte fahren?</b>",
+  fWeiter:"<b>Würdest du weitere Stationen fahren?</b>",
   ja:"Ja", vielleicht:"Vielleicht", nein:"Nein",
   fText:"<b>Was hat gefehlt oder gestört?</b> Freiwillig. Bitte keine persönlichen Daten.",
   senden:"Rückmeldung senden", kopieren:"Rückmeldung kopieren",
@@ -495,7 +506,7 @@ const UI_DE = {
   fehlt:"Beantworte bitte zuerst die beiden Fragen.",
   kopiert:"Kopiert. Füge den Text in eine Nachricht an die Person ein, die dir den Kurs geschickt hat.",
   kopierFehler:"Kopieren hat nicht geklappt. Markiere den Text und kopiere ihn selbst:",
-  kopieText:"KI-Kurs „Nur Bahnhof“ geschafft: {r} von {g} richtig. Verständlich: {v} von 5. Weitere Halte: {w}.",
+  kopieText:"KI-Kurs „Nur Bahnhof“ geschafft: {r} von {g} richtig. Verständlich: {v} von 5. Weitere Stationen: {w}.",
   anmerkung:"Anmerkung:",
   glossarH:"Glossar", glossarP:"Sechzehn Begriffe, die dir bei KI immer wieder begegnen.",
   suchen:"Begriff suchen", suchPlatz:"zum Beispiel Token", glossarLeer:"Kein Begriff gefunden. Versuch ein anderes Wort.",
@@ -519,17 +530,17 @@ const UI_DE = {
   tokenZahl:"{w} Wörter, {t} Tokens",
   tokenHinweis:"So zerlegt ein Tokenizer von OpenAI (o200k_base) diese Sätze. Andere Modelle teilen etwas anders.",
   ratenNoch:"Die KI muss noch raten: {liste}.", ratenNichts:"Jetzt muss die KI nichts mehr raten.",
-  weiter:"Weiter", naechsteKarte:"Nächste Karte", abschliessen:"Halt abschließen",
-  zumFahrplan:"Zum Fahrplan", haltVon:"Halt {n} von {m}", fortschrittAria:"Fortschritt in diesem Halt",
-  haltGeschafft:"Halt {n} geschafft",
+  weiter:"Weiter", naechsteKarte:"Nächste Karte", abschliessen:"Station abschließen",
+  zumFahrplan:"Zum Fahrplan", haltVon:"Station {n} von {m}", fortschrittAria:"Fortschritt in dieser Station",
+  haltGeschafft:"Station {n} geschafft",
   ergebnis:"Du hast {r} von {g} Aufgaben richtig gelöst.", bestes:"Dein bestes Ergebnis hier: {r}.",
-  mitnehmen:"Das nimmst du mit", zurFahrkarte:"Zur Fahrkarte", weiterZu:"Weiter zu Halt {n}",
+  mitnehmen:"Das nimmst du mit", zurFahrkarte:"Zur Fahrkarte", weiterZu:"Weiter zu Station {n}",
   vorAbfahrt:"Vor der Abfahrt",
   einwH:"Darf dieser Test anonym mitzählen?",
   einwP:"Dieser Kurs ist eine Testfassung. Um ihn zu verbessern, möchte {wer} wissen, wie weit Menschen kommen und wo sie aussteigen.",
   derAnbieter:"der Anbieter",
   wasH:"Was gezählt wird",
-  wasL:["welche Halte du startest und schaffst","deine Punktzahl und wie lange du brauchst","deine Antworten auf die Fragen am Ende","in welcher Sprache du den Kurs nutzt","eine zufällige Kennung, damit deine Halte zusammengehören"],
+  wasL:["welche Stationen du startest und schaffst","deine Punktzahl und wie lange du brauchst","deine Antworten auf die Fragen am Ende","in welcher Sprache du den Kurs nutzt","eine zufällige Kennung, damit deine Stationen zusammengehören"],
   nichtH:"Was nicht gezählt wird",
   nichtL:["dein Name, deine E-Mail-Adresse, dein Standort", "welches Gerät und welchen Browser du nutzt"],
   einwHinweis:"Die Daten landen in einer Google-Tabelle. Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht. Der Kurs funktioniert auch ohne Zählung, und du kannst sie jederzeit unter Datenschutz ausschalten.",
@@ -543,7 +554,7 @@ const UI_DE = {
   zaehlH:"Anonyme Zählung",
   zaehlAus:"In dieser Fassung wird nichts gezählt und nichts übertragen.",
   zaehlP:"Der Test zählt nur mit, wenn du zugestimmt hast. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 Buchst. a DSGVO, § 25 Abs. 1 TDDDG). Du kannst sie jederzeit hier widerrufen.",
-  zaehlWas:"<b>Was:</b> welche Halte du startest und schaffst, Punktzahl, Dauer, Sprache, deine Antworten am Ende, eine zufällige Kennung und gegebenenfalls ein Kürzel dafür, über welchen Link du gekommen bist.",
+  zaehlWas:"<b>Was:</b> welche Stationen du startest und schaffst, Punktzahl, Dauer, Sprache, deine Antworten am Ende, eine zufällige Kennung und gegebenenfalls ein Kürzel dafür, über welchen Link du gekommen bist.",
   zaehlNicht:"<b>Was nicht:</b> Name, E-Mail-Adresse, Standort, Gerät und Browser. Es werden keine Cookies gesetzt.",
   zaehlWohin:"<b>Wohin:</b> in eine Google-Tabelle des Anbieters (Google Ireland Limited, Verarbeitung auch in den USA möglich). Google verarbeitet beim Senden technisch deine IP-Adresse, in der Tabelle steht sie nicht.",
   zaehlLang:"<b>Wie lange:</b> bis zum Ende der Testphase, längstens zwölf Monate.",
@@ -569,7 +580,7 @@ const ANSICHTEN = ["fahrplan","glossar","quellen","datenschutz"];
 let z = {ansicht:"fahrplan", halt:null, schritt:0, s:{}, lauf:{richtig:0,gesamt:0}, ende:false, kopiert:"", zurueck:false, frage:null, startzeit:0, rueckText:"", l:"de"};
 
 /* ---------- Sprachen ---------- */
-const SPRACHEN = {de:"Deutsch", en:"English", es:"Español", ar:"العربية"};
+const SPRACHEN = {de:"Deutsch", en:"English", es:"Español", ar:"العربية", tr:"Türkçe", uk:"Українська"};
 const TX = window.NB_TEXTE || {};
 const hatSprache = l => l === "de" || (Object.prototype.hasOwnProperty.call(SPRACHEN, l) && !!TX[l]);
 function urlWert(name){ try{ return new URLSearchParams(location.search).get(name) || ""; }catch(e){ return ""; } }

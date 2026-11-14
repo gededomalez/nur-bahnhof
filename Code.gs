@@ -14,7 +14,7 @@ const BLATT_EREIGNISSE = 'Ereignisse';
 const BLATT_AUSWERTUNG = 'Auswertung';
 const KOPF = ['Zeit', 'Kennung', 'Quelle', 'Ereignis', 'Halt', 'Richtig', 'Gesamt', 'Sekunden', 'Verständlich', 'Weitermachen', 'Freitext', 'Version', 'Sprache'];
 const ERLAUBT = ['start', 'halt_start', 'halt_fertig', 'kurs_fertig', 'feedback'];
-const SPRACHEN = ['de', 'en', 'es', 'ar'];
+const SPRACHEN = ['de', 'en', 'es', 'ar', 'tr', 'uk'];
 const ANZAHL_HALTE = 6;
 const MAX_ZEILEN = 20000;
 

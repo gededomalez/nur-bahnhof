@@ -1,6 +1,6 @@
 # Nur Bahnhof
 
-Ein KI-Grundkurs als Web-App in vier Sprachen (Deutsch, Englisch, Spanisch, Arabisch): sechs Etappen von zusammen rund 30 Minuten mit Quiz, Sortierkarten und Mini-Spielen, dazu Glossar und Quellenliste. Die App ist eine Testfassung und kann mit Einwilligung der Teilnehmenden anonym mitzählen, wie weit sie kommen.
+Ein KI-Grundkurs als Web-App in sechs Sprachen (Deutsch, Englisch, Spanisch, Arabisch, Türkisch, Ukrainisch): sechs Stationen von zusammen rund 30 Minuten mit Quiz, Sortierkarten und Mini-Spielen, dazu Glossar und Quellenliste. Die App ist eine Testfassung und kann mit Einwilligung der Teilnehmenden anonym mitzählen, wie weit sie kommen.
 
 Live: https://gededomalez.github.io/nur-bahnhof/
 
@@ -9,9 +9,9 @@ Live: https://gededomalez.github.io/nur-bahnhof/
 | Datei | Zweck |
 |---|---|
 | `index.html` | Die App: Gestaltung, Ablauf und alle deutschen Texte |
-| `texte-en.js`, `texte-es.js`, `texte-ar.js` | Die Übersetzungen. Aufbau und Reihenfolge müssen zu den deutschen Lektionen passen |
-| `manifest.json`, `icon-*.png`, `apple-touch-icon.png` | Damit sich die App auf den Home-Bildschirm legen lässt |
-| `*.woff2` | Die beiden Schriften als lokale Dateien, damit nichts von Dritten nachgeladen wird |
+| `texte-en.js`, `texte-es.js`, `texte-ar.js`, `texte-tr.js`, `texte-uk.js` | Die Übersetzungen. Aufbau und Reihenfolge müssen zu den deutschen Lektionen passen |
+| `manifest.json`, `icon-*.png`, `apple-touch-icon.png` | Damit sich die App auf den Home-Bildschirm legen lässt. `icon.svg` ist die Vorlage für das Symbol |
+| `*.woff2` | Die Schriften als lokale Dateien, damit nichts von Dritten nachgeladen wird |
 | `Code.gs` | Skript für die Google-Tabelle, die die Messdaten sammelt |
 | `werkzeug/` | Zwei Prüfskripte: `pruef.js` vergleicht die Übersetzungen mit der deutschen Fassung, `durchlauf.js` spielt den Kurs im Browser durch |
 | `UEBERGABE.md` | Einstieg für alle, die an der App weiterarbeiten: Regeln, offene Punkte, Entscheidungen |
@@ -64,7 +64,7 @@ https://gededomalez.github.io/nur-bahnhof/?l=ar
 https://gededomalez.github.io/nur-bahnhof/?l=es&q=verein
 ```
 
-Arabisch wird von rechts nach links gesetzt. Wer einen deutschen Text ändert, muss dieselbe Stelle in den drei `texte-*.js` nachziehen. In der Tabelle steht die Sprache in einer eigenen Spalte, die Auswertung zeigt Gestartete und Abschlüsse je Sprache.
+Arabisch wird von rechts nach links gesetzt. Wer einen deutschen Text ändert, muss dieselbe Stelle in allen fünf `texte-*.js` nachziehen. Im Code heißen die Stationen `Halt` und `HALTE`, sichtbar steht überall „Station“. In der Tabelle steht die Sprache in einer eigenen Spalte, die Auswertung zeigt Gestartete und Abschlüsse je Sprache.
 
 ## Kanäle vergleichen
 
@@ -98,4 +98,4 @@ Das erste Skript muss „Fehler: 0“ melden. Das zweite braucht Playwright und 
 
 ## Schriften
 
-Atkinson Hyperlegible (Braille Institute of America), Barlow Condensed (The Barlow Project Authors) und Noto Sans Arabic (The Noto Project Authors), alle unter der SIL Open Font License 1.1. Die Lizenztexte liegen in den `LICENSE-…`-Dateien.
+Atkinson Hyperlegible (Braille Institute of America), Barlow Condensed (The Barlow Project Authors), Noto Sans Arabic und Noto Sans für Kyrillisch (The Noto Project Authors) sowie Roboto Condensed für kyrillische Überschriften (Google), alle unter der SIL Open Font License 1.1. Die Lizenztexte liegen in den `LICENSE-…`-Dateien.

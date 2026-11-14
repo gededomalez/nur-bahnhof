@@ -17,7 +17,7 @@ const bild = async (p, name, voll) => { if (BILDER) await p.screenshot({ path: p
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROME || '/usr/bin/google-chrome', args: ['--no-sandbox'] });
   const errs = [], out = {};
-  for (const l of ['de', 'en', 'es', 'ar']) {
+  for (const l of ['de', 'en', 'es', 'ar', 'tr', 'uk']) {
     const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, locale: 'de-DE', hasTouch: true, isMobile: true, colorScheme: l === 'es' ? 'dark' : 'light' });
     const p = await ctx.newPage();
     p.on('pageerror', e => errs.push(l + ': ' + String(e)));
@@ -64,7 +64,7 @@ const bild = async (p, name, voll) => { if (BILDER) await p.screenshot({ path: p
     await p.tap('[data-akt="rueck"][data-wert="5"]'); await p.tap('[data-akt="rueck"][data-wert="Vielleicht"]'); await p.tap('[data-akt="senden"]'); await p.waitForTimeout(300);
     o.aufgaben = n; o.overflow = await p.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
     for (const v of ['glossar', 'quellen', 'datenschutz']) { await p.goto('http://localhost:8768/?l=' + l + '#' + v); await p.waitForTimeout(100); if (v !== 'glossar' && (l === 'de')) await bild(p, l + '-' + v, true); }
-    o.impressum = (await p.textContent('.seite')).includes('Gideon Morales');
+    o.impressum = (await p.textContent('.seite')).includes('Sound&Sun');
     o.bad = bad; await ctx.close();
   }
   console.log(JSON.stringify(out, null, 1));

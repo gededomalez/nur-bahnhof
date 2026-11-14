@@ -5,7 +5,7 @@ const ROOT = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
 const seg = html.slice(html.indexOf('const Q = {'), html.indexOf('const INSTALL_DE'));
 const box = { window: {} }; vm.createContext(box);
-for (const l of ['en', 'es', 'ar']) vm.runInContext(fs.readFileSync(path.join(ROOT, 'texte-' + l + '.js'), 'utf8'), box);
+for (const l of ['en', 'es', 'ar', 'tr', 'uk']) vm.runInContext(fs.readFileSync(path.join(ROOT, 'texte-' + l + '.js'), 'utf8'), box);
 vm.runInContext(seg + '\nthis.HALTE=HALTE;this.GLOSSAR=GLOSSAR;this.UI_DE=UI_DE;this.Q=Q;', box);
 const { HALTE, GLOSSAR, UI_DE, Q } = box; const T = box.window.NB_TEXTE;
 let fehler = 0; const f = m => { fehler++; console.log('FEHLER', m); };
@@ -25,7 +25,7 @@ const reihen = html.match(/const reihenfolge = (\[[^\]]+\])/); const liste = JSO
 for (const k of Object.keys(Q)) if (!liste.includes(k)) f('Quelle nicht in der Quellenliste: ' + k);
 for (const k of liste) if (!Q[k]) f('Quellenliste nennt unbekannte Quelle: ' + k);
 
-for (const l of ['en', 'es', 'ar']) {
+for (const l of ['en', 'es', 'ar', 'tr', 'uk']) {
   const t = T[l]; if (!t) { f(l + ' fehlt'); continue; }
   for (const k of Object.keys(UI_DE)) {
     const a = UI_DE[k], b = t.ui[k];
